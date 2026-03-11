@@ -1,0 +1,66 @@
+.button {
+    font-size: 1rem;
+    border-radius: 999px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+    transition: background-color 100ms ease, transform 50ms ease-in-out;
+    cursor: pointer;
+}
+a {
+    text-decoration: none;
+    display: inline-flex;
+}
+
+.button:active {
+    transform: scale(.9);
+}
+
+/* Size */
+
+.button--sm {
+    font-size: .75rem;
+    padding: .5rem .74rem;
+
+}
+
+.button--md {
+    font-size: 1rem;
+    padding: .75rem 1rem;
+}
+
+.button--lg {
+    font-size: 1.25rem;
+    padding: 1rem 1.5rem
+}
+
+/* Variants */
+
+.button--primary {
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+    border: none;
+}
+.button--primary:hover {
+    background-color: var(--color-accent-hover);
+}
+
+.button--secondary {
+    background-color: transparent;
+    border: 2px solid var(--color-accent);
+    color: var(--color-accent);
+}
+.button--secondary:hover {
+    background-color: color-mix(in oklab, var(--color-accent) 10%, transparent);
+}
+
+.button--ghost {
+    background-color: transparent;
+    border: none;
+    color: var(--color-accent);
+}
+.button--ghost:hover {
+    background-color: color-mix(in oklab, var(--color-accent) 10%, transparent);
+}

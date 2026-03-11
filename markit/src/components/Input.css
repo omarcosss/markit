@@ -1,0 +1,107 @@
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.input__control {
+  display: flex;
+  position: relative;
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  padding: 1.25rem 1rem 0;
+  background: var(--color-background);
+}
+
+.input__label {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.2s ease, font-size 0.2s ease, color 0.2s ease, top 0.2s ease;
+  pointer-events: none;
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.input__label-text {
+    color: var(--color-text-secondary);
+}
+
+.input__required-mark {
+  font-weight: bold;
+}
+
+.input__field {
+  width: 100%;
+  border: none;
+  padding: 0.75rem 0;
+  font-size: 1rem;
+  background: transparent;
+  color: var(--color-text);
+}
+
+.input__field:focus-visible {
+  border: none;
+  outline: none;
+}
+
+.input__control:focus-within {
+  outline: 1px solid var(--color-accent);
+}
+
+.input__field:focus + .input__label,
+.input__field:not(:placeholder-shown) + .input__label {
+  top: 0.35rem;
+  transform: translateY(0);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.input__field:disabled {
+}
+
+.input__message {
+    display: inline-flex;
+    padding-left: .75rem;
+    font-size: .75rem;
+    opacity: .75;
+}
+
+.input__message--helper {
+}
+
+.input__message--error {
+    color: var(--color-danger);
+}
+
+.input--with-label {
+}
+
+.input--with-helper {
+}
+
+.input--required {
+}
+
+.input--disabled {
+    opacity: .5;
+}
+
+.input--error {
+}
+
+.input--error .input__control {
+    border-color: var(--color-danger);
+    outline-color: var(--color-danger);
+}
+
+.input--error .input__field {
+}
+
+.input--error .input__label {
+}
+
+.input--disabled .input__label,
+.input--disabled .input__message {
+}

@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/* ── Design tokens (Tailwind palette) ───────────────────────────────────── */
+:root {
+  /* Accent — Tailwind teal */
+  --color-accent:            #14b8a6; /* teal-500 */
+  --color-accent-hover:      #0d9488; /* teal-600 */
+  --color-accent-foreground: #ffffff;
+
+  /* Danger — Tailwind red */
+  --color-danger:            #ef4444; /* red-500 */
+
+  /* Text — Tailwind stone */
+  --color-text:              #1c1917; /* stone-900 */
+  --color-text-secondary:    #57534e; /* stone-600 */
+
+  /* Border — Tailwind stone */
+  --color-border:            #e7e5e4; /* stone-200 */
+
+  /* Surface */
+  --color-background:        #ffffff;
+  --font-brand: "Bricolage Grotesque", sans-serif;
+}
+
+@theme {
+  --font-brand: var(--font-brand);
+} 
+
+/* ── Base reset ─────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: system-ui, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--color-text);
+  background-color: var(--color-background);
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+/* ── Modal animations ───────────────────────────────────────────────────── */
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modal-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes backdrop-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.modal-panel-in  { animation: modal-in    320ms cubic-bezier(0.47, 0, 0.23, 1.38) both; }
+.modal-panel-out { animation: modal-out   180ms ease-in                             both; }
+
+.modal-backdrop-in  { animation: backdrop-in  200ms ease      both; }
+.modal-backdrop-out { animation: backdrop-out 180ms ease-in   both; }

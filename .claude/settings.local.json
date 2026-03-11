@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build)",
+      "Bash(python -c \"from app.schemas.user import UserCreate\")",
+      "Bash(python3 -c \"from app.schemas.user import UserCreate\")",
+      "Bash(pip3 list)",
+      "Bash(pgrep -f \"uvicorn\")",
+      "Bash(kill 49471)",
+      "Bash(uvicorn --version)"
+    ]
+  }
+}
