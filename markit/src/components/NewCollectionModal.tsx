@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import Button from "./Button";
 import Input from "./Input";
 import Modal from "./Modal";
+import Divisor from "./Divisor";
 
 export default function NewCollectionModal({ onClose }: { onClose: () => void }) {
   const [title, setTitle] = useState("");
@@ -13,7 +14,10 @@ export default function NewCollectionModal({ onClose }: { onClose: () => void })
 
   async function handleNewCollection(e: FormEvent) {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      setError("Please enter a title");
+      return;
+    }
     setAdding(true);
     setError("");
     try {
@@ -29,12 +33,7 @@ export default function NewCollectionModal({ onClose }: { onClose: () => void })
 
   return (
     <Modal
-      title="New Collection"
-      footer={
-        <Button className="self-end" type="submit" form="newCollectionForm" loading={adding}>
-          Add
-        </Button>
-      }
+      title="Create new collection"
       onClose={onClose}
     >
       {adding ? (
@@ -43,15 +42,19 @@ export default function NewCollectionModal({ onClose }: { onClose: () => void })
           <span className="text-center text-stone-600 text-sm">Creating new collection…</span>
         </div>
       ) : (
-        <form onSubmit={handleNewCollection} id="newCollectionForm">
+        <form onSubmit={handleNewCollection} id="newCollectionForm" className="flex flex-col gap-6">
+          <Divisor />
           <Input
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => { setTitle(e.target.value); setError(""); }}
             label="Collection Title"
             autoFocus
-            required
+            error={error}
           />
-          {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+          <Divisor />
+          <Button className="self-end" type="submit" form="newCollectionForm" loading={adding}>
+            Add
+          </Button>
         </form>
       )}
     </Modal>

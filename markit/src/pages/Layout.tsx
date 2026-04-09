@@ -9,7 +9,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <Header />
       <section className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <article className="flex-1 flex flex-col overflow-hidden">
+        <article className="flex-1 flex flex-col overflow-hidden bg-white rounded-tl-4xl border-l border-t border-stone-200 shadow-xs">
           {children}
         </article>
       </section>

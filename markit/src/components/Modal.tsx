@@ -24,7 +24,6 @@ export default function Modal({
 }: ModalProps) {
   const [isClosing, setIsClosing] = useState(false);
 
-  // Intercept every close trigger — play exit animation, then unmount
   const handleClose = useCallback(() => {
     if (isClosing) return;
     setIsClosing(true);
@@ -42,7 +41,7 @@ export default function Modal({
   return (
     <div
       role="presentation"
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm ${
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs ${
         isClosing ? "modal-backdrop-out" : "modal-backdrop-in"
       }`}
       onClick={handleClose}
@@ -51,7 +50,7 @@ export default function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`relative flex flex-col gap-6 w-[90vw] max-h-[90vh] overflow-y-auto bg-stone-50 rounded-2xl p-8 shadow-xl ${
+        className={`relative flex flex-col gap-6 w-[90vw] max-h-[90vh] overflow-y-auto bg-stone-50 rounded-4xl p-8 shadow-xl ${
           isClosing ? "modal-panel-out" : "modal-panel-in"
         }`}
         style={{ maxWidth: MAX_WIDTHS[size] }}
@@ -62,7 +61,7 @@ export default function Modal({
           {title && (
             <h2 className="text-xl font-semibold m-0 font-brand">{title}</h2>
           )}
-          <Button variant="ghost" onClick={handleClose} aria-label="Close">
+          <Button variant="ghost" onClick={handleClose} aria-label="Close" type="button">
             <Xmark width={18} height={18} className="text-stone-600" />
           </Button>
         </div>

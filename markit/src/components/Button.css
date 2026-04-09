@@ -2,65 +2,88 @@
     font-size: 1rem;
     border-radius: 999px;
     display: inline-flex;
-    justify-content: center;
+    /* justify-content: center; */
     align-items: center;
     gap: 4px;
     font-weight: 500;
-    transition: background-color 100ms ease, transform 50ms ease-in-out;
     cursor: pointer;
+    -webkit-transition: background 200ms ease, transform 50ms ease-in-out;
+    -moz-transition: background 200ms ease, transform 50ms ease-in-out;
+    -o-transition: background 200ms ease, transform 50ms ease-in-out;
+    transition: background 200ms ease, transform 50ms ease-in-out;
 }
+
+
 a {
     text-decoration: none;
     display: inline-flex;
 }
 
 .button:active {
-    transform: scale(.9);
+    transform: scale(.95);
 }
 
 /* Size */
 
 .button--sm {
-    font-size: .75rem;
+    /* font-size: .75rem; */
     padding: .5rem .74rem;
 
 }
 
 .button--md {
-    font-size: 1rem;
+    /* font-size: 1rem; */
     padding: .75rem 1rem;
 }
 
 .button--lg {
-    font-size: 1.25rem;
+    /* font-size: 1.25rem; */
     padding: 1rem 1.5rem
 }
 
 /* Variants */
 
 .button--primary {
+    border: 1px solid transparent;
     background-color: var(--color-accent);
+    background: 
+        linear-gradient(to bottom, var(--color-teal-500), var(--color-teal-600)) padding-box,
+        linear-gradient(to bottom, var(--color-teal-400), var(--color-teal-600)) border-box;
     color: var(--color-accent-foreground);
-    border: none;
+    text-shadow: 0px 1px 1px rgb(0 0 0 / 0.2);
+}
+.button--primary svg {
+    filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.2));
 }
 .button--primary:hover {
-    background-color: var(--color-accent-hover);
+    background: 
+        linear-gradient(to bottom, var(--color-teal-400), var(--color-teal-500)) padding-box,
+        linear-gradient(to bottom, var(--color-teal-300), var(--color-teal-500)) border-box;
 }
 
 .button--secondary {
-    background-color: transparent;
-    border: 2px solid var(--color-accent);
-    color: var(--color-accent);
+    background-color: var(--color-stone-50);
+    border: 1px solid transparent;
+    background: 
+        linear-gradient(to bottom, var(--color-stone-100), var(--color-stone-200)) padding-box,
+        linear-gradient(to bottom, var(--color-stone-50), var(--color-stone-300)) border-box;
+    color: var(--color-stone-700);
+    text-shadow: 0px 1px 1px rgb(0 0 0 / 0.1);
+}
+.button--secondary svg {
+    filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.1));
 }
 .button--secondary:hover {
-    background-color: color-mix(in oklab, var(--color-accent) 10%, transparent);
+    background: 
+        linear-gradient(to bottom, var(--color-stone-50), var(--color-stone-100)) padding-box,
+        linear-gradient(to bottom, var(--color-white), var(--color-stone-200)) border-box;
 }
 
 .button--ghost {
     background-color: transparent;
     border: none;
-    color: var(--color-accent);
+    color: var(--color-stone-700);
 }
 .button--ghost:hover {
-    background-color: color-mix(in oklab, var(--color-accent) 10%, transparent);
+    background-color: var(--color-teal-100);
 }

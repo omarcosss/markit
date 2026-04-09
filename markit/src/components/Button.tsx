@@ -6,6 +6,8 @@ import {
   type ReactNode,
 } from 'react';
 import './Button.css';
+import { OrbitalLoader } from './OrbitalLoader';
+import { SystemRestart } from 'iconoir-react';
 
 type Variant = 'primary' | 'secondary' | 'ghost';
 type Size = 'sm' | 'md' | 'lg';
@@ -32,7 +34,7 @@ export default function Button({
 }: ButtonProps) {
   const isDisabled = disabled || loading;
   const classes = `button button--${variant} button--${size} ${className}`.trim();
-  const content = loading ? 'Aguarde...' : children;
+  const content = loading ? <SystemRestart className='animation-spin' /> : children;
 
   if (asChild) {
     if (!isValidElement(children)) {

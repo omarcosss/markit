@@ -6,6 +6,7 @@ import { collectionsService } from "../services/collections";
 import { onBookmarkAdded, onCollectionAdded } from "../lib/events";
 import type { Bookmark, Collection } from "../types";
 import Layout from "./Layout";
+import BookmarkCard from "../components/BookmarkCard";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -88,7 +89,7 @@ export default function DashboardPage() {
 
 /* ── Sub-components ─────────────────────────────────────────────────────── */
 
-function BookmarkCard({
+function BookmarkCardaa({
   bookmark,
   onDelete,
 }: {
