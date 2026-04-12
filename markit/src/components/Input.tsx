@@ -104,7 +104,7 @@ export default function Input({
 
       {!error && hasNativeInvalid ? (
         <small id={nativeErrorId} className="input__message input__message--error">
-          Formato inválido.
+          Invalid format.
         </small>
       ) : null}
 

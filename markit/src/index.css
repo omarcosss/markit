@@ -75,7 +75,7 @@ a:hover {
 @keyframes drawer-in {
   from {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(300px);
   }
   to {
     opacity: 1;
@@ -100,7 +100,7 @@ a:hover {
   }
   to {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(300px);
   }
 }
 
@@ -114,10 +114,10 @@ a:hover {
   to   { opacity: 0; }
 }
 
-.modal-panel-in  { animation: modal-in    320ms cubic-bezier(0.47, 0, 0.23, 1.38) both; }
+.modal-panel-in  { animation: modal-in    320ms cubic-bezier(0.78, 0, 0.22, 1) both; }
 .modal-panel-out { animation: modal-out   180ms ease-in                             both; }
 
-.drawer-in  { animation: drawer-in    320ms cubic-bezier(0.47, 0, 0.23, 1.38) both; }
+.drawer-in  { animation: drawer-in    400ms cubic-bezier(0.78, 0, 0.22, 1) both; }
 .drawer-out { animation: drawer-out   180ms ease-in                             both; }
 
 .modal-backdrop-in  { animation: backdrop-in  200ms ease      both; }

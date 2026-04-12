@@ -47,13 +47,13 @@ export default function NewCollectionModal({ onClose }: { onClose: () => void })
           <Input
             value={title}
             onChange={(e) => { setTitle(e.target.value); setError(""); }}
-            label="Collection Title"
+            label="What would you like to call it?"
             autoFocus
             error={error}
           />
           <Divisor />
           <Button className="self-end" type="submit" form="newCollectionForm" loading={adding}>
-            Add
+            Create
           </Button>
         </form>
       )}

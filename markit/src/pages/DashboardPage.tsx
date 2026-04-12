@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Globe, Xmark } from "iconoir-react";
 import { bookmarksService } from "../services/bookmarks";
 import { collectionsService } from "../services/collections";
-import { onBookmarkAdded, onCollectionAdded } from "../lib/events";
+import { onBookmarkAdded, onBookmarkUpdated, onCollectionAdded, onNavigate, onSearch, type SidebarView } from "../lib/events";
 import type { Bookmark, Collection } from "../types";
 import Layout from "./Layout";
 import BookmarkCard from "../components/BookmarkCard";
@@ -13,7 +13,8 @@ export default function DashboardPage() {
 
   const [collections, setCollections] = useState<Collection[]>([]);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [selectedCollectionId, _setSelectedCollectionId] = useState<number | null>(null);
+  const [view, setView] = useState<SidebarView>({ type: "all" });
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Load initial data; redirect home on 401
   useEffect(() => {
@@ -37,10 +38,15 @@ export default function DashboardPage() {
     const offBookmark = onBookmarkAdded((b) =>
       setBookmarks((prev) => [b, ...prev])
     );
+    const offBookmarkUpdated = onBookmarkUpdated((b) =>
+      setBookmarks((prev) => prev.map((x) => (x.id === b.id ? b : x)))
+    );
     const offCollection = onCollectionAdded((c) =>
       setCollections((prev) => [...prev, c])
     );
-    return () => { offBookmark(); offCollection(); };
+    const offNavigate = onNavigate(setView);
+    const offSearch = onSearch(setSearchQuery);
+    return () => { offBookmark(); offBookmarkUpdated(); offCollection(); offNavigate(); offSearch(); };
   }, []);
 
   async function handleDelete(id: number) {
@@ -48,15 +54,33 @@ export default function DashboardPage() {
     setBookmarks((prev) => prev.filter((b) => b.id !== id));
   }
 
-  const filtered =
-    selectedCollectionId === null
-      ? bookmarks
-      : bookmarks.filter((b) => b.collection_id === selectedCollectionId);
+  const q = searchQuery.trim().toLowerCase();
+
+  const filtered = (() => {
+    let list = bookmarks;
+    if (view.type === "collection")
+      list = list.filter((b) => b.collection_id === view.id);
+    else if (view.type === "all")
+      list = [...list].sort((a, b) =>
+        (a.title ?? a.url).localeCompare(b.title ?? b.url)
+      );
+    // recents — preserve insertion order (newest first)
+    if (q)
+      list = list.filter((b) =>
+        (b.title ?? "").toLowerCase().includes(q) ||
+        (b.description ?? "").toLowerCase().includes(q) ||
+        (b.url).toLowerCase().includes(q) ||
+        (b.domain ?? "").toLowerCase().includes(q)
+      );
+    return list;
+  })();
 
   const heading =
-    selectedCollectionId === null
-      ? "All bookmarks"
-      : (collections.find((c) => c.id === selectedCollectionId)?.name ?? "Bookmarks");
+    view.type === "collection"
+      ? (collections.find((c) => c.id === view.id)?.name ?? "Bookmarks")
+      : view.type === "recents"
+      ? "Recents"
+      : "All Bookmarks";
 
   return (
     <Layout>
@@ -77,7 +101,12 @@ export default function DashboardPage() {
           ) : (
             <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {filtered.map((b) => (
-                <BookmarkCard key={b.id} bookmark={b} onDelete={() => handleDelete(b.id)} />
+                <BookmarkCard
+                  key={b.id}
+                  bookmark={b}
+                  onDelete={() => handleDelete(b.id)}
+                  collectionName={collections.find((c) => c.id === b.collection_id)?.name}
+                />
               ))}
             </div>
           )}

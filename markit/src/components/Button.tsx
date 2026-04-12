@@ -6,7 +6,6 @@ import {
   type ReactNode,
 } from 'react';
 import './Button.css';
-import { OrbitalLoader } from './OrbitalLoader';
 import { SystemRestart } from 'iconoir-react';
 
 type Variant = 'primary' | 'secondary' | 'ghost';

@@ -3,7 +3,7 @@ import Button from "./Button";
 import { useEffect, useState, type ReactNode } from "react";
 import type { Collection } from "../types";
 import { collectionsService } from "../services/collections";
-import { onCollectionAdded } from "../lib/events";
+import { emitNavigate, onCollectionAdded, type SidebarView } from "../lib/events";
 import { useNavigate } from "react-router-dom";
 import Divisor from "./Divisor";
 import NewBookmarkModal from "./NewBookmarkModal";
@@ -42,8 +42,13 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [selectedCollectionId, setSelectedCollectionId] = useState<number | null>(null);
+  const [view, setView] = useState<SidebarView>({ type: "all" });
   const [modal, setModal] = useState<ModalView>(null);
+
+  function navigate_to(v: SidebarView) {
+    setView(v);
+    emitNavigate(v);
+  }
 
   useEffect(() => {
     async function load() {
@@ -68,14 +73,14 @@ export default function Sidebar() {
       <SidebarItem
         label="All Bookmarks"
         icon={<BookmarkBook />}
-        active={selectedCollectionId === null}
-        onClick={() => setSelectedCollectionId(null)}
+        active={view.type === "all"}
+        onClick={() => navigate_to({ type: "all" })}
       />
       <SidebarItem
         label="Recents"
         icon={<ClockRotateRight />}
-        active={false}
-        onClick={() => setSelectedCollectionId(null)}
+        active={view.type === "recents"}
+        onClick={() => navigate_to({ type: "recents" })}
       />
 
       <Divisor />
@@ -97,8 +102,8 @@ export default function Sidebar() {
         <SidebarItem
           key={c.id}
           label={c.name}
-          active={selectedCollectionId === c.id}
-          onClick={() => setSelectedCollectionId(c.id)}
+          active={view.type === "collection" && view.id === c.id}
+          onClick={() => navigate_to({ type: "collection", id: c.id })}
         />
       ))}
 

@@ -1,9 +1,9 @@
-import { CloudBookmark, LogOut, Plus } from "iconoir-react";
+import { CloudBookmark, LogOut, Plus, Xmark } from "iconoir-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User } from "../types";
 import { usersService } from "../services/users";
-import Input from "./Input";
+import { emitSearch } from "../lib/events";
 import Button from "./Button";
 import NewBookmarkModal from "./NewBookmarkModal";
 
@@ -13,6 +13,7 @@ export default function Header() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [modal, setModal] = useState<ModalView>(null);
+  const [query, setQuery] = useState("");
   
 
   useEffect(() => {
@@ -33,8 +34,21 @@ export default function Header() {
         <CloudBookmark width={24} height={24} strokeWidth={2}/>
         <h1 className="font-bold font-brand text-3xl">Mark<span className="text-teal-600">it</span></h1>
       </div>
-      <div className="flex flex-1 h-full items-center justify-center px-6 gap-3">
-        <input type="search" placeholder="Search" className="bg-white rounded-full h-12 px-4 border border-stone-200" />
+      <div className="flex min-w-72 flex-1 h-full items-center justify-center px-6 gap-3">
+        <input
+          type="search"
+          placeholder="Search bookmarks…"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            emitSearch(e.target.value);
+          }}
+          onKeyDown={(e) => e.key === "Escape" && (setQuery(""), emitSearch(""))}
+          className="bg-white rounded-full h-12 px-4 border border-stone-200 w-full max-w-md outline-none focus:ring-2 focus:ring-teal-400 transition"
+        />
+        {query !== "" && (
+          <><Button onClick={() => (setQuery(""), emitSearch(""))} size="sm" variant="secondary"><Xmark width={15} height={15} strokeWidth={2}/></Button></>
+        ) }
       </div>
       <div className="flex w-full h-full items-center justify-end px-6 gap-6">
         <Button size="md" className="nowrap" onClick={() => setModal("newBookmark")}>

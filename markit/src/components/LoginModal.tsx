@@ -51,7 +51,7 @@ export default function LoginModal({ onClose, onSwitchToSignup }: LoginModalProp
         {error && (
           <p className="text-sm text-red-500 text-center -mt-1">{error}</p>
         )}
-        <Button type="submit" loading={loading} className="w-full mt-2">
+        <Button type="submit" loading={loading} className="w-full mt-2 justify-center">
           Login
         </Button>
       </form>
