@@ -41,7 +41,7 @@ export default function Modal({
   return (
     <div
       role="presentation"
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs ${
+      className={`fixed inset-0 z-50 flex pt-56 justify-center bg-black/10 backdrop-blur-xs ${
         isClosing ? "modal-backdrop-out" : "modal-backdrop-in"
       }`}
       onClick={handleClose}
@@ -50,7 +50,7 @@ export default function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`relative flex flex-col gap-6 w-[90vw] max-h-[90vh] overflow-y-auto bg-stone-50 rounded-4xl p-8 shadow-xl ${
+        className={`relative flex flex-col gap-6 w-[90vw] h-fit max-h-[90vh] overflow-y-auto bg-stone-50 rounded-4xl p-8 shadow-xl ${
           isClosing ? "modal-panel-out" : "modal-panel-in"
         }`}
         style={{ maxWidth: MAX_WIDTHS[size] }}

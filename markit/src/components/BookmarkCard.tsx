@@ -21,7 +21,7 @@ function BookmarkCard({
 
   return (
     <div
-      className="group relative flex flex-col bg-white rounded-3xl border border-stone-200  transition-shadow hover:bg-stone-50/50 group overflow-visible"
+      className="group relative flex flex-col bg-white rounded-3xl border border-stone-200  transition-shadow hover:bg-stone-50/50 group overflow-visible hover:shadow-xs"
     >
       {drawer === "open" && (
         <BookmarkDrawer bookmark={bookmark} onClose={() => setDrawer("closed")}/>

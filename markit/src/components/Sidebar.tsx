@@ -1,4 +1,4 @@
-import { BookmarkBook, BookStack, ClockRotateRight, Plus } from "iconoir-react";
+import { BookmarkBook, ClockRotateRight, Plus } from "iconoir-react";
 import Button from "./Button";
 import { useEffect, useState, type ReactNode } from "react";
 import type { Collection } from "../types";
@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import Divisor from "./Divisor";
 import NewBookmarkModal from "./NewBookmarkModal";
 import NewCollectionModal from "./NewCollectionModal";
-import { OrbitalLoader } from "./OrbitalLoader";
 
 function SidebarItem({
   label,
@@ -24,10 +23,10 @@ function SidebarItem({
   return (
     <button
       onClick={onClick}
-      className={`flex w-full items-center gap-3 px-4 py-3 rounded-full transition-colors ${
+      className={`flex w-full items-center gap-3 px-4 py-3 rounded-2xl border transition-colors ${
         active
-          ? "text-teal-700 font-bold"
-          : "text-stone-700 hover:bg-stone-100"
+          ? "text-teal-700 font-semibold bg-white border-stone-200 shadow-brand"
+          : "text-stone-700 hover:bg-stone-100 hover:text-stone-900 border-transparent"
       }`}
     >
       {icon}

@@ -2,6 +2,18 @@
   min-height: 100vh;
 }
 
+.welcome-character {
+  position: absolute;
+  display: block;
+  top: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200%;
+  height: auto;
+  max-width: none;
+  pointer-events: none;
+}
+
 .loader {
   width: 50px;
   aspect-ratio: 1;

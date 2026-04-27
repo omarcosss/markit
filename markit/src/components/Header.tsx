@@ -1,4 +1,4 @@
-import { CloudBookmark, LogOut, Plus, Xmark } from "iconoir-react";
+import { LogOut, Plus, Xmark } from "iconoir-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User } from "../types";
@@ -31,8 +31,7 @@ export default function Header() {
   return (
     <header className="flex w-full h-20 shrink-0">
       <div className="flex w-full h-full items-center px-6 gap-3">
-        <CloudBookmark width={24} height={24} strokeWidth={2}/>
-        <h1 className="font-bold font-brand text-3xl">Mark<span className="text-teal-600">it</span></h1>
+        <img src="/logo.svg" className="h-8"/>
       </div>
       <div className="flex min-w-72 flex-1 h-full items-center justify-center px-6 gap-3">
         <input
@@ -44,7 +43,7 @@ export default function Header() {
             emitSearch(e.target.value);
           }}
           onKeyDown={(e) => e.key === "Escape" && (setQuery(""), emitSearch(""))}
-          className="bg-white rounded-full h-12 px-4 border border-stone-200 w-full max-w-md outline-none focus:ring-2 focus:ring-teal-400 transition"
+          className="bg-white rounded-2xl h-12 px-4 border border-stone-200 w-full max-w-md outline-none focus:ring-2 focus:ring-teal-500 transition shadow-brand"
         />
         {query !== "" && (
           <><Button onClick={() => (setQuery(""), emitSearch(""))} size="sm" variant="secondary"><Xmark width={15} height={15} strokeWidth={2}/></Button></>
@@ -56,7 +55,7 @@ export default function Header() {
           New Bookmark
         </Button>
         {user && (
-          <div className="flex gap-3 rounded-full bg-white px-3 h-12 border border-stone-200 items-center justify-center">
+          <div className="flex gap-3 rounded-2xl bg-white px-3 h-12 border border-stone-200 items-center justify-center shadow-brand">
             <div className="w-7 h-7 shrink-0 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 text-xs font-bold">
               {initial}
             </div>

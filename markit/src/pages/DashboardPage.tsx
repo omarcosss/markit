@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Globe, Xmark } from "iconoir-react";
+import { Globe } from "iconoir-react";
 import { bookmarksService } from "../services/bookmarks";
 import { collectionsService } from "../services/collections";
 import { onBookmarkAdded, onBookmarkUpdated, onCollectionAdded, onNavigate, onSearch, type SidebarView } from "../lib/events";
@@ -85,9 +85,9 @@ export default function DashboardPage() {
   return (
     <Layout>
       <main className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-6">
-          <h2 className="text-base font-semibold text-stone-900 mb-4">
-            {heading}
+          <h2 className="text-xl font-semibold text-stone-900 mb-4">
+          {heading}
+        
             <span className="ml-2 text-stone-400 font-normal text-sm">
               {filtered.length}
             </span>
@@ -110,72 +110,7 @@ export default function DashboardPage() {
               ))}
             </div>
           )}
-        </div>
       </main>
     </Layout>
-  );
-}
-
-/* ── Sub-components ─────────────────────────────────────────────────────── */
-
-function BookmarkCardaa({
-  bookmark,
-  onDelete,
-}: {
-  bookmark: Bookmark;
-  onDelete: () => void;
-}) {
-  return (
-    <a
-      href={bookmark.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group relative flex flex-col bg-white rounded-xl border border-stone-200 overflow-hidden hover:shadow-md transition-shadow"
-    >
-      {/* Thumbnail */}
-      {bookmark.thumbnail ? (
-        <img
-          src={bookmark.thumbnail}
-          alt=""
-          className="w-full h-32 object-cover"
-        />
-      ) : (
-        <div className="w-full h-32 bg-stone-100 flex items-center justify-center">
-          {bookmark.favicon ? (
-            <img src={bookmark.favicon} alt="" className="w-8 h-8" />
-          ) : (
-            <Globe width={28} height={28} className="text-stone-300" />
-          )}
-        </div>
-      )}
-
-      {/* Info */}
-      <div className="p-3 flex-1">
-        <p className="text-sm font-medium text-stone-900 line-clamp-2 leading-snug">
-          {bookmark.title ?? bookmark.domain ?? bookmark.url}
-        </p>
-        {bookmark.domain && (
-          <p className="mt-1 text-xs text-stone-400 truncate flex items-center gap-1">
-            {bookmark.favicon && (
-              <img src={bookmark.favicon} alt="" className="w-3 h-3 inline" />
-            )}
-            {bookmark.domain}
-          </p>
-        )}
-      </div>
-
-      {/* Delete — visible on hover */}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          onDelete();
-        }}
-        aria-label="Delete bookmark"
-        className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-md bg-white border border-stone-200 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:border-red-200 hover:text-red-500"
-      >
-        <Xmark width={12} height={12} />
-      </button>
-    </a>
   );
 }

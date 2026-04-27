@@ -8,6 +8,7 @@ type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> & {
   containerClassName?: string;
   inputClassName?: string;
   mask?: (value: string) => string;
+  showRequired?: boolean;
 };
 
 export default function Input({
@@ -22,6 +23,7 @@ export default function Input({
   className = '',
   containerClassName = '',
   inputClassName = '',
+  showRequired = false,
   mask,
   onBlur,
   onChange,
@@ -32,13 +34,13 @@ export default function Input({
   const [hasNativeInvalid, setHasNativeInvalid] = useState(false);
 
   const inputId = id ?? name ?? generatedId;
-  const errorId = inputId && error ? `${inputId}-error` : undefined;
-  const nativeErrorId = inputId && !error && hasNativeInvalid ? `${inputId}-native-error` : undefined;
-  const helperId = inputId && !error && !hasNativeInvalid && helperText ? `${inputId}-helper` : undefined;
+  const messageId = `${inputId}-message`;
 
   const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
-    setIsTouched(true);
-    setHasNativeInvalid(!event.currentTarget.validity.valid);
+    if (event.currentTarget.value.length > 0) {
+      setIsTouched(true);
+      setHasNativeInvalid(!event.currentTarget.validity.valid);
+    }
     onBlur?.(event);
   };
 
@@ -81,7 +83,7 @@ export default function Input({
           required={required}
           disabled={disabled}
           aria-invalid={isInvalid}
-          aria-describedby={errorId ?? nativeErrorId ?? helperId}
+          aria-describedby={messageId}
           className={inputClasses}
           placeholder={rest.placeholder ?? (label ? ' ' : rest.placeholder)}
           onBlur={handleBlur}
@@ -91,28 +93,18 @@ export default function Input({
         {label ? (
           <span className="input__label">
             <span className="input__label-text">{label}</span>
-            {required ? <span className="input__required-mark">*</span> : null}
+            {showRequired ? <span className="input__required-mark">*</span> : null}
           </span>
         ) : null}
       </label>
 
-      {error ? (
-        <small id={errorId} className="input__message input__message--error">
-          {error}
-        </small>
-      ) : null}
-
-      {!error && hasNativeInvalid ? (
-        <small id={nativeErrorId} className="input__message input__message--error">
-          Invalid format.
-        </small>
-      ) : null}
-
-      {!error && !hasNativeInvalid && helperText ? (
-        <small id={helperId} className="input__message input__message--helper">
-          {helperText}
-        </small>
-      ) : null}
+      <small
+        id={messageId}
+        aria-live="polite"
+        className={`input__message${error || hasNativeInvalid ? " input__message--error" : ""}`}
+      >
+        {error || (hasNativeInvalid ? "Invalid format." : helperText)}
+      </small>
     </div>
   );
 }
