@@ -18,6 +18,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   });
 
   if (!res.ok) {
+    if (res.status === 401) clearToken();
     const error = await res.json().catch(() => ({}));
     throw new Error(error.detail || "Something went wrong");
   }
