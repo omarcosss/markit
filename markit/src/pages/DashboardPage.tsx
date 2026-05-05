@@ -84,32 +84,31 @@ export default function DashboardPage() {
 
   return (
     <Layout>
-      <main className="flex-1 flex flex-col overflow-hidden">
-          <h2 className="text-xl font-semibold text-stone-900 mb-4">
+      <main className="flex-1 flex flex-col overflow-y-auto">
+        <h2 className="text-xl font-semibold text-stone-900 mb-4">
           {heading}
-        
-            <span className="ml-2 text-stone-400 font-normal text-sm">
-              {filtered.length}
-            </span>
-          </h2>
+          <span className="ml-2 text-stone-400 font-normal text-sm">
+            {filtered.length}
+          </span>
+        </h2>
 
-          {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 gap-3 text-stone-400">
-              <Globe width={36} height={36} />
-              <p className="text-sm">No bookmarks yet — paste a URL above to save one.</p>
-            </div>
-          ) : (
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {filtered.map((b) => (
-                <BookmarkCard
-                  key={b.id}
-                  bookmark={b}
-                  onDelete={() => handleDelete(b.id)}
-                  collectionName={collections.find((c) => c.id === b.collection_id)?.name}
-                />
-              ))}
-            </div>
-          )}
+        {filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-stone-400">
+            <Globe width={36} height={36} />
+            <p className="text-sm text-center px-4">No bookmarks yet — paste a URL above to save one.</p>
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filtered.map((b) => (
+              <BookmarkCard
+                key={b.id}
+                bookmark={b}
+                onDelete={() => handleDelete(b.id)}
+                collectionName={collections.find((c) => c.id === b.collection_id)?.name}
+              />
+            ))}
+          </div>
+        )}
       </main>
     </Layout>
   );

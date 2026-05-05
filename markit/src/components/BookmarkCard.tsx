@@ -21,7 +21,7 @@ function BookmarkCard({
 
   return (
     <div
-      className="group relative flex flex-col bg-white rounded-3xl border border-stone-200  transition-shadow hover:bg-stone-50/50 group overflow-visible hover:shadow-xs"
+      className="group relative flex flex-col border border-stone-200 rounded-2xl transition-shadow  group overflow-visible hover:shadow-md"
     >
       {drawer === "open" && (
         <BookmarkDrawer bookmark={bookmark} onClose={() => setDrawer("closed")}/>
@@ -37,36 +37,35 @@ function BookmarkCard({
         className="absolute inset-0 z-0"
       ></button>
       
-      <div className="p-3 flex-1 flex flex-col gap-3 justify-between">
-        {bookmark.domain && (
-          <a 
-            href={bookmark.url}
-            target="_blank"
-            rel="noopener noreferrer"  
-            className="z-1"
-          >
-            <p className="mt-1 text-sm text-stone-600 truncate flex items-center gap-1 hover:underline hover:text-teal-800 py-1 px-2 hover:bg-teal-100 rounded-full">
-              {bookmark.domain}
-              <ArrowUpRight width={15} height={15}/>
+      <div className="p-4 flex-1 flex flex-col gap-3 justify-between">
+        <p className="text-md font-medium text-stone-900 line-clamp-2 leading-snug flex gap-3">
+          <div className="flex justify-center items-center w-10 h-10  rounded-lg">
+            {bookmark.favicon && (
+              <img src={bookmark.favicon} alt="" className="w-8 h-8 inline" />
+            )}
+          </div>
+          <div className="flex flex-col w-3/4 gap-3">
+            <div>
+              <h2 className="text-lg font-semibold truncate max-w-full" title={bookmark.title ?? bookmark.domain ?? bookmark.url} >
+                {bookmark.title ?? bookmark.domain ?? bookmark.url}
+              </h2>
+              {bookmark.domain && (
+                <p className=" text-stone-600 truncate text-sm">
+                  {bookmark.domain}
+                </p>
+              )}
+            </div>
+            <p className="flex flex-1 text-xs text-stone-600 gap-1 -ml-1">
+              <BookStack width={16} height={16} className="shrink-0" />
+              {collectionName ?? <span className="text-stone-400">No collection</span>}
             </p>
-          </a>
-        )}
-        <p className="text-md font-medium text-stone-900 line-clamp-2 leading-snug">
-          {bookmark.favicon && (
-            <img src={bookmark.favicon} alt="" className="w-4 h-4 inline mr-1" />
-          )}
-          {bookmark.title ?? bookmark.domain ?? bookmark.url}
+          </div>
+          <Button className="z-10 absolute top-2 right-2" size="sm" variant="ghost" onClick={() => setMenu("open")}><MoreHoriz width={24}/></Button>
+            
         </p>
-        <div className="flex gap-3">
-          <p className="flex self-center flex-1 text-xs text-stone-600 gap-1">
-            <BookStack width={16} height={16} className="shrink-0" />
-            {collectionName ?? <span className="text-stone-400">No collection</span>}
-          </p>
-          <Button className="z-10" size="sm" variant="secondary" onClick={() => setMenu("open")}><MoreHoriz width={24}/></Button>
-          {menu === "open" && (
-            <BookmarkOptionsMenu url={bookmark.url} onDelete={onDelete} onClose={() => setMenu("closed")}/>
-          )}
-        </div>
+        {menu === "open" && (
+          <BookmarkOptionsMenu url={bookmark.url} onDelete={onDelete} onClose={() => setMenu("closed")}/>
+        )}
       </div>
     </div>
   );
@@ -107,7 +106,18 @@ function BookmarkOptionsMenu({
 
   return(
     <>
-      <div ref={menuRef} className="flex flex-col p-2 z-20 absolute bg-white border border-stone-200 right-3 bottom-2 translate-y-full rounded-3xl shadow-md">
+      <div ref={menuRef} className="flex flex-col p-2 z-20 absolute bg-white border border-stone-200 right-2 top-2  rounded-3xl shadow-lg">
+        <Button asChild size="sm" variant="ghost" className="justify">
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"  
+            className="z-1"
+          >
+            <ArrowUpRight width={18} height={18} className="mr-2" strokeWidth={2} />
+            Open
+          </a>
+        </Button>
         <Button size="sm" variant="ghost" className="justify" onClick={() => {
           navigator.clipboard.writeText(url);
           toast.success("Link copied");

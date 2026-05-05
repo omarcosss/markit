@@ -51,7 +51,14 @@ export function onSearch(handler: (q: string) => void) {
   return () => window.removeEventListener("search:query", listener);
 }
 
+let _currentView: SidebarView = { type: "all" };
+
+export function getCurrentView(): SidebarView {
+  return _currentView;
+}
+
 export function emitNavigate(view: SidebarView) {
+  _currentView = view;
   window.dispatchEvent(new CustomEvent("sidebar:navigate", { detail: view }));
 }
 

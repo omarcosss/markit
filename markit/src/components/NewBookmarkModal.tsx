@@ -15,6 +15,7 @@ export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState<"url" | "details">("url");
   const [url, setUrl] = useState("");
   const [scrapeResult, setScrapeResult] = useState<ScrapeResult | null>(null);
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [collectionId, setCollectionId] = useState<number | "">("");
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -38,6 +39,7 @@ export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
     try {
       const result = await bookmarksService.scrape(trimmed);
       setScrapeResult(result);
+      setTitle(result.title ?? "New bookmark");
       setDescription(result.description ?? "");
       setStep("details");
     } catch (err) {
@@ -53,6 +55,7 @@ export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
     try {
       const bookmark = await bookmarksService.create({
         ...scrapeResult,
+        title: title || null,
         description: description || null,
         collection_id: collectionId === "" ? null : collectionId,
       });
@@ -100,7 +103,11 @@ export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
           <div className="flex flex-col gap-6 px-2 pb-2">
             <Divisor />
             {scrapeResult?.title && (
-              <p className="text-sm font-medium text-stone-700 truncate">{scrapeResult.title}</p>
+              <Input
+                label="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
             )}
             <TextArea
               label="Description"

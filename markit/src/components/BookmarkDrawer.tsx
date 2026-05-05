@@ -179,13 +179,13 @@ export default function BookmarkDrawer({ bookmark, onClose }: BookmarkDrawerProp
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className={`fixed overflow-x-hidden overflow-y-auto rounded-l-4xl h-dvh w-[40%] min-w-2xl right-0 top-0 shadow-lg bg-white z-60 focus:outline-none ${
+        className={`fixed overflow-x-hidden overflow-y-auto h-dvh right-0 top-0 shadow-lg bg-white z-60 focus:outline-none w-full sm:w-[90%] md:w-[60%] lg:w-[45%] xl:w-[40%] sm:max-w-[640px] md:max-w-none md:min-w-2xl rounded-none sm:rounded-l-4xl ${
           isClosing ? "drawer-out" : "drawer-in"
         }`}
       >
         <DrawerMedia bookmark={currentBookmark} />
 
-        <article className="flex flex-col p-8 gap-8">
+        <article className="flex flex-col p-5 sm:p-8 gap-6 sm:gap-8 pt-16 sm:pt-8">
           {isEditing ? (
             <EditFields
               fields={fields}
@@ -214,7 +214,7 @@ export default function BookmarkDrawer({ bookmark, onClose }: BookmarkDrawerProp
                     collectionId: e.target.value ? Number(e.target.value) : null,
                   }))
                 }
-                className="text-lg border border-stone-200 rounded-full px-4 py-3 bg-white"
+                className="text-lg border border-stone-200 rounded-2xl px-4 py-3 bg-white"
               >
                 <option value="">None</option>
                 {collections.map((c) => (
@@ -226,7 +226,7 @@ export default function BookmarkDrawer({ bookmark, onClose }: BookmarkDrawerProp
             ) : (
               <span
                 id={collectionFieldId}
-                className="text rounded-full px-4 py-3 bg-stone-100 -mx-3"
+                className="text rounded-2xl px-4 py-3 bg-stone-100 -mx-3"
               >
                 {currentCollectionName}
               </span>
@@ -234,8 +234,8 @@ export default function BookmarkDrawer({ bookmark, onClose }: BookmarkDrawerProp
           </div>
 
           {!isEditing && (
-            <div className="flex gap-3">
-              <Button asChild className="flex-1 justify-center">
+            <div className="flex flex-wrap gap-3">
+              <Button asChild className="flex-1 min-w-0 justify-center">
                 <a
                   href={currentBookmark.url}
                   target="_blank"
@@ -246,7 +246,7 @@ export default function BookmarkDrawer({ bookmark, onClose }: BookmarkDrawerProp
                 </a>
               </Button>
               {confirmDelete ? (
-                <div className="flex gap-3" role="group" aria-label="Confirm delete">
+                <div className="flex gap-3 w-full sm:w-auto" role="group" aria-label="Confirm delete">
                   <Button
                     variant="secondary"
                     className="flex-1 justify-center"
@@ -325,14 +325,14 @@ function DrawerMedia({ bookmark }: { bookmark: Bookmark }) {
         src={bookmark.thumbnail}
         alt=""
         role="presentation"
-        className="w-full h-64 object-cover"
+        className="w-full h-44 sm:h-64 object-cover"
       />
     );
   }
   return (
     <div
       role="presentation"
-      className="w-full h-32 bg-stone-100 flex items-center justify-center"
+      className="w-full h-24 sm:h-32 bg-stone-100 flex items-center justify-center"
     >
       {bookmark.favicon ? (
         <img src={bookmark.favicon} alt="" className="w-8 h-8" />
@@ -355,7 +355,7 @@ function ReadView({
   return (
     <>
       <header className="flex flex-col gap-2">
-        <h2 id={titleId} className="text-3xl font-bold">
+        <h2 id={titleId} className="text-2xl sm:text-3xl font-bold break-words">
           {bookmark.title}
         </h2>
         <p className="text-sm text-stone-600">
@@ -366,16 +366,17 @@ function ReadView({
         </p>
       </header>
 
-      <div className="flex gap-5">
+      <div className="flex items-center gap-3 sm:gap-5 min-w-0">
         <a
-          className="hover:underline! bg-teal-50 text-teal-800! flex px-4 py-3 rounded-full w-full -mx-3"
+          className="hover:underline! bg-teal-50 text-teal-800! flex px-4 py-3 rounded-2xl w-full min-w-0 truncate -mx-3 sm:-mx-3"
           href={bookmark.url}
           target="_blank"
           rel="noopener noreferrer"
+          title={bookmark.url}
         >
-          {bookmark.url}
+          <span className="truncate">{bookmark.url}</span>
         </a>
-        <Button variant="ghost" onClick={onCopyUrl} aria-label="Copy link">
+        <Button variant="ghost" onClick={onCopyUrl} aria-label="Copy link" className="shrink-0">
           <Copy aria-hidden="true" />
         </Button>
       </div>

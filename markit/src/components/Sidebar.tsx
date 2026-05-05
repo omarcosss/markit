@@ -3,7 +3,7 @@ import Button from "./Button";
 import { useEffect, useState, type ReactNode } from "react";
 import type { Collection } from "../types";
 import { collectionsService } from "../services/collections";
-import { emitNavigate, onCollectionAdded, type SidebarView } from "../lib/events";
+import { emitNavigate, getCurrentView, onCollectionAdded, type SidebarView } from "../lib/events";
 import { useNavigate } from "react-router-dom";
 import Divisor from "./Divisor";
 import NewBookmarkModal from "./NewBookmarkModal";
@@ -25,7 +25,7 @@ function SidebarItem({
       onClick={onClick}
       className={`flex w-full items-center gap-3 px-4 py-3 rounded-2xl border transition-colors ${
         active
-          ? "text-teal-700 font-semibold bg-white border-stone-200 shadow-brand"
+          ? "text-teal-700 font-semibold bg-white/50 border-white shadow-brand"
           : "text-stone-700 hover:bg-stone-100 hover:text-stone-900 border-transparent"
       }`}
     >
@@ -37,16 +37,17 @@ function SidebarItem({
 
 type ModalView = "newBookmark" | "editBookmark" | "newCollection" | null;
 
-export default function Sidebar() {
+export default function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const navigate = useNavigate();
 
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [view, setView] = useState<SidebarView>({ type: "all" });
+  const [view, setView] = useState<SidebarView>(getCurrentView);
   const [modal, setModal] = useState<ModalView>(null);
 
   function navigate_to(v: SidebarView) {
     setView(v);
     emitNavigate(v);
+    onNavigate?.();
   }
 
   useEffect(() => {
@@ -68,7 +69,7 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <aside className="w-62 shrink-0 flex flex-col gap-3 px-3 py-4 h-full">
+    <aside className="w-72 md:w-62 shrink-0 flex flex-col gap-3 px-3 py-4 h-full">
       <SidebarItem
         label="All Bookmarks"
         icon={<BookmarkBook />}

@@ -85,5 +85,5 @@ a {
     color: var(--color-stone-700);
 }
 .button--ghost:hover {
-    background-color: var(--color-teal-100);
+    background-color: color-mix(in oklab, var(--color-teal-600) 10%, transparent 90%) ;
 }

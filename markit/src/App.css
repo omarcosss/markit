@@ -13,6 +13,13 @@
   max-width: none;
   pointer-events: none;
 }
+@media(max-width: 480px){
+  .welcome-character{
+    bottom: 0px;
+    left: 10%;
+    width: 50%;
+  }
+}
 
 .loader {
   width: 50px;

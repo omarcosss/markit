@@ -41,7 +41,7 @@ export default function Modal({
   return (
     <div
       role="presentation"
-      className={`fixed inset-0 z-50 flex pt-56 justify-center bg-black/10 backdrop-blur-xs ${
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs ${
         isClosing ? "modal-backdrop-out" : "modal-backdrop-in"
       }`}
       onClick={handleClose}
