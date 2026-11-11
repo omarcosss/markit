@@ -25,7 +25,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   }, [sidebarOpen]);
 
   return (
-    <div className="flex flex-col h-dvh overflow-hidden bg-stone-100">
+    <div className="flex flex-col h-dvh overflow-hidden bg-stone-50">
       <Header onMenuClick={() => setSidebarOpen(true)} />
       <section className="flex flex-1 overflow-hidden relative">
         {/* Desktop sidebar */}
@@ -53,7 +53,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           </>
         )}
 
-        <article className="flex-1 px-4 py-5 sm:px-6 sm:py-6 md:px-10 md:py-10 flex flex-col overflow-hidden bg-white md:rounded-tl-4xl  md:shadow-brand">
+        <article className="flex-1 px-4 py-5 sm:px-6 sm:py-6 md:px-10 md:py-10 flex flex-col overflow-hidden bg-white md:rounded-tl-4xl  md:shadow-brand border-l border-t border-stone-100 ">
           {children}
         </article>
       </section>

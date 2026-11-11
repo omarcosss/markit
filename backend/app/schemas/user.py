@@ -1,17 +1,42 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, field_validator
+
+PASSWORD_MIN = 8
+# bcrypt only uses the first 72 bytes; refuse longer passwords instead of silently truncating.
+PASSWORD_MAX_BYTES = 72
+
+
+def _check_password(v: str) -> str:
+    if len(v.encode()) > PASSWORD_MAX_BYTES:
+        raise ValueError(f"Password must be at most {PASSWORD_MAX_BYTES} bytes")
+    return v
 
 
 class UserCreate(BaseModel):
     email: EmailStr
-    password: str
-    name: str | None = None
+    password: str = Field(min_length=PASSWORD_MIN)
+    name: str | None = Field(default=None, max_length=100)
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def _lower_email(cls, v):
+        return v.strip().lower() if isinstance(v, str) else v
+
+    @field_validator("password")
+    @classmethod
+    def _password_length(cls, v: str) -> str:
+        return _check_password(v)
 
 
 class UserUpdate(BaseModel):
-    name: str | None = None
+    name: str | None = Field(default=None, max_length=100)
     email: EmailStr | None = None
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def _lower_email(cls, v):
+        return v.strip().lower() if isinstance(v, str) else v
 
 
 class UserOut(BaseModel):
@@ -23,8 +48,3 @@ class UserOut(BaseModel):
 
     class Config:
         from_attributes = True
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str

@@ -42,13 +42,13 @@ cd backend
 pip install -r requirements.txt
 ```
 
-Create `backend/.env`:
+Create `backend/.env` from `backend/.env.example` and set a random `SECRET_KEY` (the server refuses to start without one):
 
-```env
-SECRET_KEY=change-me-in-production
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(48))"
 ```
+
+For local development over plain HTTP, set `COOKIE_SECURE=false`.
 
 ```bash
 uvicorn app.main:app --reload
@@ -68,6 +68,8 @@ Create `markit/.env`:
 ```env
 VITE_API_URL=http://localhost:8000
 ```
+
+Authentication uses an HttpOnly session cookie, so tokens are never stored in the browser.
 
 ```bash
 npm run dev

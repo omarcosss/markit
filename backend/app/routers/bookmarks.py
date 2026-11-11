@@ -1,6 +1,9 @@
+import asyncio
+
 from app.database import get_db
 from app.dependencies.auth import get_current_user
 from app.models.bookmark import Bookmark
+from app.models.collection import Collection
 from app.models.user import User
 from app.schemas.bookmark import (
     BookmarkCreate,
@@ -9,11 +12,30 @@ from app.schemas.bookmark import (
     ScrapeRequest,
     ScrapeResult,
 )
-from app.services.scraper import fetch_metadata
+from app.services.rate_limit import RateLimiter
+from app.services.scraper import UnsafeURLError, fetch_metadata, fallback_metadata
+from app.services.url import domain_from_url, favicon_for_domain
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 router = APIRouter()
+
+SCRAPE_DEADLINE_SECONDS = 10
+# Each scrape makes outbound requests, so it is limited per user.
+scrape_by_user = RateLimiter(30, 60, "Too many lookups. Wait a minute and try again.")
+
+
+def _assert_own_collection(db: Session, user: User, collection_id: int | None) -> None:
+    """A bookmark may only be placed in a collection owned by the same user."""
+    if collection_id is None:
+        return
+    owned = (
+        db.query(Collection.id)
+        .filter(Collection.id == collection_id, Collection.user_id == user.id)
+        .first()
+    )
+    if not owned:
+        raise HTTPException(status_code=400, detail="Collection not found")
 
 
 @router.post("/scrape", response_model=ScrapeResult)
@@ -21,7 +43,14 @@ async def scrape_url(
     data: ScrapeRequest,
     current_user: User = Depends(get_current_user),
 ):
-    metadata = await fetch_metadata(data.url)
+    scrape_by_user.hit(str(current_user.id))
+    try:
+        metadata = await asyncio.wait_for(fetch_metadata(data.url), timeout=SCRAPE_DEADLINE_SECONDS)
+    except UnsafeURLError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except asyncio.TimeoutError:
+        # Slow page: save the bookmark with domain-only metadata instead of failing.
+        metadata = fallback_metadata(data.url)
     return {"url": data.url, **metadata}
 
 
@@ -31,6 +60,7 @@ def create_bookmark(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    _assert_own_collection(db, current_user, data.collection_id)
     bookmark = Bookmark(**data.model_dump(), user_id=current_user.id)
     db.add(bookmark)
     db.commit()
@@ -80,8 +110,14 @@ def update_bookmark(
     )
     if not bookmark:
         raise HTTPException(status_code=404, detail="Bookmark not found")
-    for field, value in data.model_dump(exclude_unset=True).items():
+    updates = data.model_dump(exclude_unset=True)
+    if "collection_id" in updates:
+        _assert_own_collection(db, current_user, updates["collection_id"])
+    for field, value in updates.items():
         setattr(bookmark, field, value)
+    if "url" in updates:
+        bookmark.domain = domain_from_url(bookmark.url)
+        bookmark.favicon = favicon_for_domain(bookmark.domain)
     db.commit()
     db.refresh(bookmark)
     return bookmark

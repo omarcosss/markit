@@ -8,6 +8,7 @@ import TextArea from "./TextArea";
 import { bookmarksService } from "../services/bookmarks";
 import { collectionsService } from "../services/collections";
 import { emitBookmarkUpdated } from "../lib/events";
+import { normalizeUrl, safeHref } from "../lib/url";
 
 const CLOSE_DURATION_MS = 180;
 
@@ -102,12 +103,16 @@ export default function BookmarkDrawer({ bookmark, onClose }: BookmarkDrawerProp
       setIsEditing(false);
       return;
     }
+    if (!fields.url.trim()) {
+      toast.error("URL can't be empty");
+      return;
+    }
     setSaving(true);
     try {
       const updated = await bookmarksService.update(currentBookmark.id, {
         title: fields.title,
         description: fields.description,
-        url: fields.url,
+        url: normalizeUrl(fields.url),
         collection_id: fields.collectionId,
       });
       setCurrentBookmark(updated);
@@ -237,7 +242,7 @@ export default function BookmarkDrawer({ bookmark, onClose }: BookmarkDrawerProp
             <div className="flex flex-wrap gap-3">
               <Button asChild className="flex-1 min-w-0 justify-center">
                 <a
-                  href={currentBookmark.url}
+                  href={safeHref(currentBookmark.url)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -369,7 +374,7 @@ function ReadView({
       <div className="flex items-center gap-3 sm:gap-5 min-w-0">
         <a
           className="hover:underline! bg-teal-50 text-teal-800! flex px-4 py-3 rounded-2xl w-full min-w-0 truncate -mx-3 sm:-mx-3"
-          href={bookmark.url}
+          href={safeHref(bookmark.url)}
           target="_blank"
           rel="noopener noreferrer"
           title={bookmark.url}
@@ -420,7 +425,8 @@ function EditFields({
       />
       <Input
         label="URL"
-        type="url"
+        type="text"
+        inputMode="url"
         value={fields.url}
         onChange={(e) => onChange((f) => ({ ...f, url: e.target.value }))}
       />
