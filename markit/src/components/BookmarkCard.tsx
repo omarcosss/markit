@@ -39,10 +39,10 @@ function BookmarkCard({
       ></button>
       
       <div className="p-4 flex-1 flex flex-col gap-3 justify-between">
-        <p className="text-md font-medium text-stone-900 line-clamp-2 leading-snug flex flex-col gap-3">
-          <div className="flex justify-center items-center w-10 h-10  rounded-lg">
+        <p className="text-md font-medium text-stone-900 line-clamp-2 leading-snug flex flex-col gap-3 overflow-visible">
+          <div className="flex justify-center items-center w-9 h-9 rounded-full overflow-hidden">
             {bookmark.favicon && (
-              <img src={bookmark.favicon} alt="" className="w-8 h-8 inline" />
+              <img src={bookmark.favicon} alt="" className="inline" />
             )}
           </div>
           <div className="flex flex-col w-3/4 gap-3">

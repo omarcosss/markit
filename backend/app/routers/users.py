@@ -9,8 +9,10 @@ from app.dependencies.auth import (
     user_from_token,
     verify_password,
 )
+from app.models.bookmark import Bookmark
+from app.models.collection import Collection
 from app.models.user import User
-from app.schemas.user import UserCreate, UserOut, UserUpdate
+from app.schemas.user import PasswordChange, UserCreate, UserOut, UserUpdate
 from app.services.rate_limit import login_by_email, login_by_ip, register_by_ip
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -136,6 +138,24 @@ def update_me(
     return current_user
 
 
+@router.patch("/me/password", status_code=204)
+def change_password(
+    data: PasswordChange,
+    response: Response,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    _confirm_password(current_user, data.current_password)
+    if verify_password(data.new_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="New password must be different from the current one")
+    current_user.hashed_password = hash_password(data.new_password)
+    # Bumping token_version signs out every other session, including stolen ones.
+    current_user.token_version = (current_user.token_version or 0) + 1
+    db.commit()
+    # Re-issue the cookie so the session that made the change stays signed in.
+    set_auth_cookie(response, current_user)
+
+
 @router.delete("/me", status_code=204)
 def delete_me(
     data: PasswordConfirmation,
@@ -144,6 +164,10 @@ def delete_me(
     db: Session = Depends(get_db),
 ):
     _confirm_password(current_user, data.current_password)
+    # No ON DELETE CASCADE in the schema and SQLite doesn't enforce foreign keys by
+    # default, so remove the user's data explicitly to avoid orphaned rows.
+    db.query(Bookmark).filter(Bookmark.user_id == current_user.id).delete(synchronize_session=False)
+    db.query(Collection).filter(Collection.user_id == current_user.id).delete(synchronize_session=False)
     db.delete(current_user)
     db.commit()
     clear_auth_cookie(response)
