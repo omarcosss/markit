@@ -46,7 +46,7 @@ markit/dist-ssr/
 # Environment variables
 markit/.env
 markit/.env.production
-backend/.env
+./backend/.env
 
 # Logs
 *.log

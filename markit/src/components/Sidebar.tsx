@@ -3,7 +3,8 @@ import Button from "./Button";
 import { useEffect, useState, type ReactNode } from "react";
 import type { Collection } from "../types";
 import { collectionsService } from "../services/collections";
-import { emitNavigate, getCurrentView, onCollectionAdded, type SidebarView } from "../lib/events";
+import { ApiError } from "../lib/api";
+import { emitNavigate, getCurrentView, onCollectionAdded, onCollectionRemoved, onCollectionUpdated, onNavigate as onViewChange, type SidebarView } from "../lib/events";
 import { useNavigate } from "react-router-dom";
 import Divisor from "./Divisor";
 import NewBookmarkModal from "./NewBookmarkModal";
@@ -25,7 +26,7 @@ function SidebarItem({
       onClick={onClick}
       className={`flex w-full items-center gap-3 px-4 py-3 rounded-2xl border transition-colors ${
         active
-          ? "text-teal-700 font-semibold bg-white/50 border-white shadow-brand"
+          ? "text-stone-900 font-semibold bg-stone-200 border-stone-100 shadow-brand  "
           : "text-stone-700 hover:bg-stone-100 hover:text-stone-900 border-transparent"
       }`}
     >
@@ -55,17 +56,28 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}
       try {
         const cols = await collectionsService.list();
         setCollections(cols);
-      } catch {
-        navigate("/", { replace: true });
+      } catch (err) {
+        // Only an expired/invalid session should send the user to login.
+        if (err instanceof ApiError && err.status === 401) {
+          navigate("/", { replace: true });
+        }
       }
     }
     load();
   }, [navigate]);
 
   useEffect(() => {
-    return onCollectionAdded((col) =>
+    const offAdded = onCollectionAdded((col) =>
       setCollections((prev) => [...prev, col])
     );
+    const offUpdated = onCollectionUpdated((col) =>
+      setCollections((prev) => prev.map((c) => (c.id === col.id ? { ...c, ...col } : c)))
+    );
+    const offRemoved = onCollectionRemoved((id) =>
+      setCollections((prev) => prev.filter((c) => c.id !== id))
+    );
+    const offNavigate = onViewChange(setView);
+    return () => { offAdded(); offUpdated(); offRemoved(); offNavigate(); };
   }, []);
 
   return (

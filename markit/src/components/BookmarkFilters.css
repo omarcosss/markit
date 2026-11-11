@@ -1,0 +1,30 @@
+/* Collapsible panel: animates height via grid rows, then fades/slides content. */
+.filters-collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 340ms cubic-bezier(0.78, 0, 0.22, 1);
+}
+
+.filters-collapse[data-open="false"] {
+  grid-template-rows: 0fr;
+}
+
+.filters-collapse__inner {
+  min-height: 0;
+  overflow: hidden;
+  transition:
+    opacity 260ms ease,
+    transform 340ms cubic-bezier(0.78, 0, 0.22, 1);
+}
+
+.filters-collapse[data-open="false"] .filters-collapse__inner {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filters-collapse,
+  .filters-collapse__inner {
+    transition: none;
+  }
+}

@@ -68,3 +68,25 @@ export function onNavigate(handler: (v: SidebarView) => void) {
   window.addEventListener("sidebar:navigate", listener);
   return () => window.removeEventListener("sidebar:navigate", listener);
 }
+
+export function emitCollectionUpdated(collection: Collection) {
+  window.dispatchEvent(new CustomEvent("collection:updated", { detail: collection }));
+}
+
+export function onCollectionUpdated(handler: (c: Collection) => void) {
+  const listener = (e: Event) =>
+    handler((e as CustomEvent<Collection>).detail);
+  window.addEventListener("collection:updated", listener);
+  return () => window.removeEventListener("collection:updated", listener);
+}
+
+export function emitCollectionRemoved(id: number) {
+  window.dispatchEvent(new CustomEvent("collection:removed", { detail: id }));
+}
+
+export function onCollectionRemoved(handler: (id: number) => void) {
+  const listener = (e: Event) =>
+    handler((e as CustomEvent<number>).detail);
+  window.addEventListener("collection:removed", listener);
+  return () => window.removeEventListener("collection:removed", listener);
+}

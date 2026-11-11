@@ -24,20 +24,24 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
       .catch(() => {});
   }, []);
 
-  function handleLogout() {
-    usersService.logout();
-    navigate("/");
+  async function handleLogout() {
+    try {
+      await usersService.logout();
+    } finally {
+      navigate("/");
+    }
   }
 
   const avatarUrl = user ? getAvatarUrl(user.email) : "";
 
   const searchInput = (
     <>
-      <div className="flex items-center w-full max-w-lg h-12 gap-2 px-4 bg-white/50 border border-white rounded-2xl focus-within:ring-2 focus-within:ring-teal-500 transition">
+      <label htmlFor="searchInput" className="flex items-center w-full max-w-lg h-12 gap-2 px-4 bg-white/50 border border-stone-200 rounded-2xl focus-within:ring-2 focus-within:ring-teal-500 transition">
         <span className="text-stone-600">
           <Search width={18} height={18} />
         </span>
         <input
+          id="searchInput"
           type="search"
           placeholder="Search bookmarks…"
           value={query}
@@ -48,11 +52,11 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           onKeyDown={(e) => e.key === "Escape" && (setQuery(""), emitSearch(""))}
           className=" flex-1   outline-none "
         />
-      </div>
+      </label>
       {query !== "" && (
         <Button
           onClick={() => (setQuery(""), emitSearch(""))}
-          size="sm"
+          size="md"
           variant="ghost"
           aria-label="Clear search"
         >

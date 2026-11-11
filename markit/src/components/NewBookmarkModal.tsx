@@ -10,6 +10,7 @@ import TextArea from "./TextArea";
 import { OrbitalLoader } from "./OrbitalLoader";
 import Divisor from "./Divisor";
 import type { Collection, ScrapeResult } from "../types";
+import { normalizeUrl } from "../lib/url";
 
 export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState<"url" | "details">("url");
@@ -37,7 +38,7 @@ export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
     setScraping(true);
     setError("");
     try {
-      const result = await bookmarksService.scrape(trimmed);
+      const result = await bookmarksService.scrape(normalizeUrl(trimmed));
       setScrapeResult(result);
       setTitle(result.title ?? "New bookmark");
       setDescription(result.description ?? "");
@@ -76,7 +77,7 @@ export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
             <OrbitalLoader label="Fetching..." />
           </div>
         ) : (
-          <form onSubmit={handleScrape} className="flex flex-col gap-6 px-2 pb-2" id="addBookmarkForm">
+          <form onSubmit={handleScrape} noValidate className="flex flex-col gap-6 px-2 pb-2" id="addBookmarkForm">
             <Divisor />
             <Input
               type="url"

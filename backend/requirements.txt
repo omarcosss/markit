@@ -6,6 +6,7 @@ beautifulsoup4
 python-dotenv
 pydantic
 alembic
-python-jose[cryptography]
+PyJWT>=2.10
 bcrypt
 python-multipart
+email-validator

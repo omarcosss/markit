@@ -1,7 +1,6 @@
 import { useEffect, useState, type ChangeEvent, type FocusEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
-import { getToken } from "../lib/api";
 import Input from "../components/Input";
 import { usersService } from "../services/users";
 
@@ -18,9 +17,18 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [form, setForm] = useState<FormView>("login");
 
-  // Already logged in — go straight to dashboard
+  // Already signed in (valid session cookie) — go straight to dashboard
   useEffect(() => {
-    if (getToken()) navigate("/dashboard", { replace: true });
+    let cancelled = false;
+    usersService
+      .me()
+      .then(() => !cancelled && navigate("/dashboard", { replace: true }))
+      .catch(() => {
+        // Not signed in (or server unreachable): stay on the login form.
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [navigate]);
 
   const [email, setEmail] = useState("");

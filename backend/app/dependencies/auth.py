@@ -1,20 +1,16 @@
-import os
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
+import jwt
+from app.config import settings
 from app.database import get_db
 from app.models.user import User
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+from fastapi import Cookie, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
-SECRET_KEY = os.getenv("SECRET_KEY", "changeme")
-ALGORITHM = os.getenv("ALGORITHM", "HS256")
-# Default to 30 days so users stay signed in across sessions.
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "43200"))
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+ACCESS_COOKIE_NAME = "access_token"
+JWT_ALGORITHM = "HS256"
+_CREDENTIALS_ERROR = "Could not validate credentials"
 
 
 def hash_password(plain: str) -> str:
@@ -25,29 +21,76 @@ def verify_password(plain: str, hashed: str) -> bool:
     return bcrypt.checkpw(plain.encode(), hashed.encode())
 
 
-def create_access_token(data: dict) -> str:
-    payload = data.copy()
-    payload.update({"exp": datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)})
-    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+def _token_version(user: User) -> int:
+    return user.token_version or 0
+
+
+def create_access_token(user: User) -> str:
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": str(user.id),
+        "tv": _token_version(user),
+        "iat": now,
+        "exp": now + timedelta(minutes=settings.access_token_expire_minutes),
+    }
+    return jwt.encode(payload, settings.secret_key, algorithm=JWT_ALGORITHM)
+
+
+def set_auth_cookie(response: Response, user: User) -> None:
+    response.set_cookie(
+        key=ACCESS_COOKIE_NAME,
+        value=create_access_token(user),
+        max_age=settings.access_token_expire_minutes * 60,
+        httponly=True,  # not readable from JavaScript
+        secure=settings.cookie_secure,
+        samesite="lax",
+        path="/",
+    )
+
+
+def clear_auth_cookie(response: Response) -> None:
+    response.delete_cookie(
+        key=ACCESS_COOKIE_NAME,
+        httponly=True,
+        secure=settings.cookie_secure,
+        samesite="lax",
+        path="/",
+    )
+
+
+def user_from_token(token: str | None, db: Session) -> User | None:
+    """Return the user for a valid, unrevoked token, otherwise None."""
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(
+            token,
+            settings.secret_key,
+            algorithms=[JWT_ALGORITHM],
+            options={"require": ["sub", "iat", "exp"]},
+        )
+        user_id = int(payload["sub"])
+        # Tokens issued before token_version existed have no "tv" claim: treat as 0.
+        token_version = int(payload.get("tv", 0))
+    except (jwt.PyJWTError, KeyError, TypeError, ValueError):
+        return None
+
+    user = db.get(User, user_id)
+    if user is None or not user.is_active:
+        return None
+    if token_version != _token_version(user):
+        return None  # revoked by logout
+    return user
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    access_token: str | None = Cookie(default=None, alias=ACCESS_COOKIE_NAME),
     db: Session = Depends(get_db),
 ) -> User:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-        if user_id is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    user = db.query(User).filter(User.id == int(user_id)).first()
-    if user is None or not user.is_active:
-        raise credentials_exception
+    user = user_from_token(access_token, db)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=_CREDENTIALS_ERROR,
+        )
     return user

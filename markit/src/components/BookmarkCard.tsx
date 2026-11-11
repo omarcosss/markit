@@ -4,6 +4,7 @@ import Button from "./Button";
 import { useState, useEffect, useRef } from "react";
 import BookmarkDrawer from "./BookmarkDrawer";
 import { toast } from "sonner";
+import { safeHref } from "../lib/url";
 
 type stateType = "open" | "closed";
 
@@ -21,13 +22,13 @@ function BookmarkCard({
 
   return (
     <div
-      className="group relative flex flex-col border border-stone-200 rounded-2xl transition-shadow  group overflow-visible hover:shadow-md"
+      className="group relative flex flex-col border border-stone-200 rounded-3xl transition-shadow  group overflow-visible hover:shadow-lg shadow-stone-100"
     >
       {drawer === "open" && (
         <BookmarkDrawer bookmark={bookmark} onClose={() => setDrawer("closed")}/>
       )}
       {/* <a 
-        href={bookmark.url}
+        href={safeHref(bookmark.url)}
         target="_blank"
         rel="noopener noreferrer"  
         className="absolute inset-0 z-0"
@@ -38,7 +39,7 @@ function BookmarkCard({
       ></button>
       
       <div className="p-4 flex-1 flex flex-col gap-3 justify-between">
-        <p className="text-md font-medium text-stone-900 line-clamp-2 leading-snug flex gap-3">
+        <p className="text-md font-medium text-stone-900 line-clamp-2 leading-snug flex flex-col gap-3">
           <div className="flex justify-center items-center w-10 h-10  rounded-lg">
             {bookmark.favicon && (
               <img src={bookmark.favicon} alt="" className="w-8 h-8 inline" />
@@ -109,7 +110,7 @@ function BookmarkOptionsMenu({
       <div ref={menuRef} className="flex flex-col p-2 z-20 absolute bg-white border border-stone-200 right-2 top-2  rounded-3xl shadow-lg">
         <Button asChild size="sm" variant="ghost" className="justify">
           <a
-            href={url}
+            href={safeHref(url)}
             target="_blank"
             rel="noopener noreferrer"  
             className="z-1"

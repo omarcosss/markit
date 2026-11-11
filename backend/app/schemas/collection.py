@@ -1,14 +1,14 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CollectionCreate(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=100)
 
 
 class CollectionUpdate(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=100)
 
 
 class CollectionOut(BaseModel):
