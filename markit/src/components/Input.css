@@ -37,7 +37,7 @@
   width: 100%;
   border: none;
   padding: 0.75rem 0;
-  font-size: 1rem;
+  font-size: 16px;
   background: transparent;
   color: var(--color-text);
 }
