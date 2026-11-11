@@ -6,7 +6,7 @@ import { usersService } from "../services/users";
 import { emitSearch } from "../lib/events";
 import Button from "./Button";
 import NewBookmarkModal from "./NewBookmarkModal";
-import UserInfoModal from "./UserInfoModal";
+import AccountModal from "./AccountModal";
 import { getAvatarUrl } from "../lib/avatar";
 
 type ModalView = "newBookmark" | "userInfo" | null;
@@ -139,10 +139,15 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
         <NewBookmarkModal onClose={() => setModal(null)} />
       )}
       {modal === "userInfo" && user && (
-        <UserInfoModal
+        <AccountModal
           user={user}
           onClose={() => setModal(null)}
           onLogout={handleLogout}
+          onUserUpdated={setUser}
+          onDeleted={() => {
+            setModal(null);
+            navigate("/");
+          }}
         />
       )}
     </header>

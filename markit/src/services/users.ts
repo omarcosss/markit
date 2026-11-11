@@ -18,9 +18,17 @@ export const usersService = {
   me: () =>
     api.get<User>("/users/me"),
 
-  update: (data: UserUpdate) =>
+  // Profile changes and account deletion both require the current password.
+  update: (data: UserUpdate & { current_password: string }) =>
     api.patch<User>("/users/me", data),
 
-  remove: () =>
-    api.delete("/users/me"),
+  // Signs out every other session; this one stays signed in (the server re-issues its cookie).
+  changePassword: (currentPassword: string, newPassword: string) =>
+    api.patch<void>("/users/me/password", {
+      current_password: currentPassword,
+      new_password: newPassword,
+    }),
+
+  remove: (currentPassword: string) =>
+    api.delete("/users/me", { current_password: currentPassword }),
 };

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import Input from "./Input";
 import TextArea from "./TextArea";
 import { OrbitalLoader } from "./OrbitalLoader";
-import Divisor from "./Divisor";
+// import Divisor from "./Divisor";
 import type { Collection, ScrapeResult } from "../types";
 import { normalizeUrl } from "../lib/url";
 
@@ -78,7 +78,7 @@ export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
           </div>
         ) : (
           <form onSubmit={handleScrape} noValidate className="flex flex-col gap-6 px-2 pb-2" id="addBookmarkForm">
-            <Divisor />
+            {/* <Divisor /> */}
             <Input
               type="url"
               value={url}
@@ -87,7 +87,7 @@ export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
               label="Paste or type the link you want to bookmark"
               error={error}
             />
-            <Divisor />
+            {/* <Divisor /> */}
             <div className="flex justify-end gap-3">
               <Button form="addBookmarkForm" type="submit" loading={scraping} className="flex-1 justify-center">
                 Next
@@ -102,7 +102,7 @@ export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
           </div>
         ) : (
           <div className="flex flex-col gap-6 px-2 pb-2">
-            <Divisor />
+            {/* <Divisor /> */}
             {scrapeResult?.title && (
               <Input
                 label="Title"
@@ -131,7 +131,7 @@ export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
                 ))}
               </select>
             </div>
-            <Divisor />
+            {/* <Divisor /> */}
             <div className="flex gap-3">
               <Button
                 variant="secondary"

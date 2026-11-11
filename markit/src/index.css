@@ -46,7 +46,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  font-family: "Inter", system-ui, Helvetica, Arial, sans-serif;
+  font-family: system-ui, "Inter", Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
@@ -68,9 +68,6 @@ a {
   text-decoration: none;
 }
 
-a:hover {
-  color: var(--color-accent-hover);
-}
 
 .shadow-brand{
   -webkit-box-shadow: 0px 0px 32px 1px rgba(0,0,0,0.025);

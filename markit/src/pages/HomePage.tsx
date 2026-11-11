@@ -110,7 +110,7 @@ export default function HomePage() {
         </div>
         <div className="flex flex-col row-span-3 md:row-span-1 col-span-1 md:col-span-3 px-8 md:px-14 py-10 md:py-16 bg-white">
           <div className="flex flex-col gap-2  mb-8">
-            <h2 className="font-bold text-3xl">
+            <h2 className="font-bold text-3xl font-brand">
               {form == "login" ? "Welcome back!" : "Create an account"}
             </h2>
             <h4 className="text-stone-600">

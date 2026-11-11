@@ -28,67 +28,101 @@ export default function BookmarkFilters({
 
   return (
     <div className="filters-collapse" data-open={open}>
-    <div className="filters-collapse__inner" inert={!open}>
-    <div id="bookmark-filters" className="flex flex-wrap w-full gap-8 mb-4 overflow-visible p-2 " role="group" aria-label="Filter bookmarks">
-      <div className="flex flex-col gap-2 flex-1">
-        <label htmlFor="filter-sort" className="text-sm px-1 text-stone-500">Sort by</label>
-        <select
-          id="filter-sort"
-          value={filters.sort}
-          onChange={(e) => onChange({ ...filters, sort: e.target.value as SortOption })}
-          className={selectClass}
+      <div className="filters-collapse__inner" inert={!open}>
+        <div
+          id="bookmark-filters"
+          className="flex flex-wrap w-full gap-8 mb-4 overflow-visible p-2 items-end"
+          role="group"
+          aria-label="Filter bookmarks"
         >
-          <option value="default">Default</option>
-          <option value="newest">Newest saved</option>
-          <option value="oldest">Oldest saved</option>
-          <option value="title">Title (A–Z)</option>
-          <option value="domain">Domain (A–Z)</option>
-        </select>
+          <div className="flex flex-col gap-2 flex-1">
+            <label
+              htmlFor="filter-sort"
+              className="text-sm px-1 text-stone-500"
+            >
+              Sort by
+            </label>
+            <select
+              id="filter-sort"
+              value={filters.sort}
+              onChange={(e) =>
+                onChange({ ...filters, sort: e.target.value as SortOption })
+              }
+              className={selectClass}
+            >
+              <option value="default">Default</option>
+              <option value="newest">Newest saved</option>
+              <option value="oldest">Oldest saved</option>
+              <option value="title">Title (A–Z)</option>
+              <option value="domain">Domain (A–Z)</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-2 flex-1">
+            <label
+              htmlFor="filter-domain"
+              className="text-sm px-1 text-stone-500"
+            >
+              Domain
+            </label>
+            <select
+              id="filter-domain"
+              value={filters.domain}
+              onChange={(e) => onChange({ ...filters, domain: e.target.value })}
+              className={selectClass}
+            >
+              <option value="">All domains</option>
+              {domains.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-2 flex-1">
+            <label
+              htmlFor="filter-saved"
+              className="text-sm px-1 text-stone-500"
+            >
+              Saved
+            </label>
+            <select
+              id="filter-saved"
+              value={filters.savedWithin}
+              onChange={(e) =>
+                onChange({
+                  ...filters,
+                  savedWithin: e.target.value as SavedWithin,
+                })
+              }
+              className={selectClass}
+            >
+              <option value="any">Any time</option>
+              <option value="7">Last 7 days</option>
+              <option value="30">Last 30 days</option>
+              <option value="365">Last year</option>
+            </select>
+          </div>
+
+          {active && (
+            <span className="text-sm text-stone-400  py-3" aria-live="polite">
+              {resultCount} {resultCount === 1 ? "result" : "results"}
+            </span>
+          )}
+
+          {active && (
+            <Button
+              variant="secondary"
+              size="sm"
+              className=""
+              onClick={() => onChange(DEFAULT_FILTERS)}
+            >
+              Clear filters
+            </Button>
+          )}
+        </div>
       </div>
-
-      <div className="flex flex-col gap-2 flex-1">
-        <label htmlFor="filter-domain" className="text-sm px-1 text-stone-500">Domain</label>
-        <select
-          id="filter-domain"
-          value={filters.domain}
-          onChange={(e) => onChange({ ...filters, domain: e.target.value })}
-          className={selectClass}
-        >
-          <option value="">All domains</option>
-          {domains.map((d) => (
-            <option key={d} value={d}>{d}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex flex-col gap-2 flex-1">
-        <label htmlFor="filter-saved" className="text-sm px-1 text-stone-500">Saved</label>
-        <select
-          id="filter-saved"
-          value={filters.savedWithin}
-          onChange={(e) => onChange({ ...filters, savedWithin: e.target.value as SavedWithin })}
-          className={selectClass}
-        >
-          <option value="any">Any time</option>
-          <option value="7">Last 7 days</option>
-          <option value="30">Last 30 days</option>
-          <option value="365">Last year</option>
-        </select>
-      </div>
-
-      {active && (
-        <Button variant="secondary" size="sm" className="my-auto" onClick={() => onChange(DEFAULT_FILTERS)}>
-          Clear filters
-        </Button>
-      )}
-
-      {active && (
-        <span className="text-sm text-stone-400 my-auto" aria-live="polite">
-          {resultCount} {resultCount === 1 ? "result" : "results"}
-        </span>
-      )}
-    </div>
-    </div>
     </div>
   );
 }

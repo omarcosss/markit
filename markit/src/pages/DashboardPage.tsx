@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Globe } from "iconoir-react";
 import Button from "../components/Button";
 import { ApiError } from "../lib/api";
 import { bookmarksService } from "../services/bookmarks";
@@ -13,6 +12,7 @@ import BookmarkFilters from "../components/BookmarkFilters";
 import FilterToggle from "../components/FilterToggle";
 import CollectionOptionsMenu from "../components/CollectionOptionsMenu";
 import EditCollectionModal from "../components/EditCollectionModal";
+import Pagination from "../components/Pagination";
 import {
   DEFAULT_FILTERS,
   isFilterActive,
@@ -20,6 +20,19 @@ import {
 } from "../lib/bookmarkFilters";
 
 const FILTERS_OPEN_KEY = "markit:filtersOpen";
+const PAGE_SIZE_KEY = "markit:pageSize";
+// Multiples of 16 so the 4-column grid always ends on a full row.
+const PAGE_SIZE_OPTIONS = [16, 32, 48, 64];
+const DEFAULT_PAGE_SIZE = 16;
+
+function readPageSize(): number {
+  try {
+    const saved = Number(localStorage.getItem(PAGE_SIZE_KEY));
+    return PAGE_SIZE_OPTIONS.includes(saved) ? saved : DEFAULT_PAGE_SIZE;
+  } catch {
+    return DEFAULT_PAGE_SIZE;
+  }
+}
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -33,6 +46,9 @@ export default function DashboardPage() {
   const [loadError, setLoadError] = useState("");
   const [renaming, setRenaming] = useState<Collection | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(readPageSize);
+  const listRef = useRef<HTMLDivElement>(null);
   const [filtersOpen, setFiltersOpen] = useState<boolean>(() => {
     try {
       return localStorage.getItem(FILTERS_OPEN_KEY) === "true";
@@ -156,6 +172,35 @@ export default function DashboardPage() {
     return list;
   })();
 
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  // Clamp in case the list shrank (a delete, or a smaller page size) while on a later page.
+  const currentPage = Math.min(page, pageCount);
+  const visible = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  // Going back to the first page whenever what's listed changes. Adjusting state
+  // during render (instead of in an effect) avoids an extra render pass.
+  const listKey = `${view.type}:${view.type === "collection" ? view.id : ""}|${q}|${filters.domain}|${filters.savedWithin}|${filters.sort}`;
+  const [pageListKey, setPageListKey] = useState(listKey);
+  if (pageListKey !== listKey) {
+    setPageListKey(listKey);
+    setPage(1);
+  }
+
+  function changePage(next: number) {
+    setPage(next);
+    listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function changePageSize(size: number) {
+    setPageSize(size);
+    setPage(1);
+    try {
+      localStorage.setItem(PAGE_SIZE_KEY, String(size));
+    } catch {
+      // storage unavailable — the choice lasts for this visit only
+    }
+  }
+
   const narrowed = q !== "" || isFilterActive(filters);
 
   const activeCollection =
@@ -170,13 +215,13 @@ export default function DashboardPage() {
 
   return (
     <Layout>
-      <main className="flex-1 flex flex-col overflow-y-auto overflow-x-visible">
+      <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6 md:px-10 md:py-10 flex flex-col overflow-y-auto overflow-x-visible">
         <div className="flex items-center justify-between gap-4 mb-4 p-2">
           <div className="flex items-center gap-2 min-w-0">
-            <h2 className="text-2xl font-semibold text-stone-900 truncate">
+            <h2 className="text-2xl flex flex-wrap gap-3 items-center font-brand font-bold align-middle text-stone-900 truncate">
               {heading}
-              <span className="ml-2 text-stone-400 font-normal text-sm">
-                {filtered.length}
+              <span className=" text-stone-600 font-normal text-xs px-4 py-2 bg-stone-100 rounded-full">
+                {filtered.length} bookmarks
               </span>
             </h2>
             {activeCollection && (
@@ -212,25 +257,37 @@ export default function DashboardPage() {
             </Button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-stone-400">
-            <Globe width={36} height={36} />
-            <p className="text-sm text-center px-4">
+          <div className="flex flex-col items-center justify-center  gap-8 py-12 ">
+            <img src="/empty-state-doodle.svg" />
+            <p className="text-lg font-semibold text-center px-4">
+              {/* todo: this should show the button bellow should show the new bookmark modal */}
               {narrowed
-                ? "No bookmarks match your search or filters."
-                : "No bookmarks yet — paste a URL above to save one."}
+                ? <span>No bookmarks match your search or filters...</span>
+                : <span>No bookmarks yet. <button className="text-teal-500 cursor-pointer underline ">Try pasting a link to start.</button></span>}
             </p>
           </div>
         ) : (
-          <div className="overflow-visible p-2 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.map((b) => (
-              <BookmarkCard
-                key={b.id}
-                bookmark={b}
-                onDelete={() => handleDelete(b.id)}
-                collectionName={collections.find((c) => c.id === b.collection_id)?.name}
-              />
-            ))}
-          </div>
+          <>
+            <div ref={listRef} className="overflow-visible p-2 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {visible.map((b) => (
+                <BookmarkCard
+                  key={b.id}
+                  bookmark={b}
+                  onDelete={() => handleDelete(b.id)}
+                  collectionName={collections.find((c) => c.id === b.collection_id)?.name}
+                />
+              ))}
+            </div>
+            <Pagination
+              page={currentPage}
+              pageCount={pageCount}
+              pageSize={pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
+              total={filtered.length}
+              onPageChange={changePage}
+              onPageSizeChange={changePageSize}
+            />
+          </>
         )}
       </main>
     </Layout>

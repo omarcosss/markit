@@ -48,6 +48,6 @@ export interface UserCreate {
 }
 
 export interface UserUpdate {
-  name?: string;
+  name?: string | null;
   email?: string;
 }

@@ -39,6 +39,16 @@ class UserUpdate(BaseModel):
         return v.strip().lower() if isinstance(v, str) else v
 
 
+class PasswordChange(BaseModel):
+    current_password: str = Field(min_length=1)
+    new_password: str = Field(min_length=PASSWORD_MIN)
+
+    @field_validator("new_password")
+    @classmethod
+    def _password_length(cls, v: str) -> str:
+        return _check_password(v)
+
+
 class UserOut(BaseModel):
     id: int
     email: str

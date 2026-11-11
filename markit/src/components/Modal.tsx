@@ -8,6 +8,8 @@ interface ModalProps {
   title?: string;
   footer?: ReactNode;
   size?: "sm" | "md" | "lg";
+  /** No padding and no header: the content supplies its own layout and the close button floats. */
+  flush?: boolean;
 }
 
 const MAX_WIDTHS = { sm: "360px", md: "560px", lg: "780px" } as const;
@@ -21,6 +23,7 @@ export default function Modal({
   title,
   footer,
   size = "md",
+  flush = false,
 }: ModalProps) {
   const [isClosing, setIsClosing] = useState(false);
 
@@ -50,21 +53,32 @@ export default function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`relative flex flex-col gap-6 w-[90vw] h-fit max-h-[90vh] overflow-y-auto bg-stone-50 rounded-4xl p-8 shadow-xl ${
-          isClosing ? "modal-panel-out" : "modal-panel-in"
-        }`}
+        className={`relative flex flex-col w-[90vw] h-fit max-h-[90vh] overflow-y-auto bg-stone-50 rounded-4xl shadow-xl ${
+          flush ? "" : "gap-6 p-8"
+        } ${isClosing ? "modal-panel-out" : "modal-panel-in"}`}
         style={{ maxWidth: MAX_WIDTHS[size] }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between gap-4">
-          {title && (
-            <h2 className="text-xl font-semibold m-0 font-brand">{title}</h2>
-          )}
-          <Button variant="ghost" onClick={handleClose} aria-label="Close" type="button">
+        {flush ? (
+          <Button
+            variant="ghost"
+            onClick={handleClose}
+            aria-label="Close"
+            type="button"
+            className="absolute top-4 right-4 z-10"
+          >
             <Xmark width={18} height={18} className="text-stone-600" />
           </Button>
-        </div>
+        ) : (
+          <div className="flex items-center justify-between gap-4">
+            {title && (
+              <h2 className="text-xl font-semibold m-0 font-brand">{title}</h2>
+            )}
+            <Button variant="ghost" onClick={handleClose} aria-label="Close" type="button">
+              <Xmark width={18} height={18} className="text-stone-600" />
+            </Button>
+          </div>
+        )}
 
         {/* Body */}
         {children}

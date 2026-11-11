@@ -67,6 +67,7 @@ export const api = {
     request<T>(path, { method: "POST", body: body === undefined ? undefined : JSON.stringify(body) }),
   patch: <T>(path: string, body: unknown) =>
     request<T>(path, { method: "PATCH", body: JSON.stringify(body) }),
-  delete: (path: string) => request(path, { method: "DELETE" }),
+  delete: (path: string, body?: unknown) =>
+    request(path, { method: "DELETE", body: body === undefined ? undefined : JSON.stringify(body) }),
   postForm: <T>(path: string, body: Record<string, string>) => requestForm<T>(path, body),
 };
