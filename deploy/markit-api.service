@@ -1,0 +1,32 @@
+# Copy to /etc/systemd/system/markit-api.service on the server, then:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now markit-api
+#   sudo journalctl -u markit-api -f
+#
+# Paths and user match the production server (marcosc-markit).
+
+[Unit]
+Description=Markit API (FastAPI + uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=marcosc-markit
+Group=marcosc-markit
+WorkingDirectory=/home/marcosc-markit/htdocs/markit.marcosc.dev/backend
+# Loads SECRET_KEY, CORS_ORIGINS, etc. Keep this file readable only by the service user.
+EnvironmentFile=/home/marcosc-markit/htdocs/markit.marcosc.dev/backend/.env
+ExecStart=/home/marcosc-markit/htdocs/markit.marcosc.dev/backend/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=on-failure
+RestartSec=3
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+# The SQLite file lives in backend/, so that directory must stay writable.
+ReadWritePaths=/home/marcosc-markit/htdocs/markit.marcosc.dev/backend
+
+[Install]
+WantedBy=multi-user.target
