@@ -101,14 +101,15 @@ export default function HomePage() {
       : "Looks good!";
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen gap-6 bg-stone-100 p-2">
-      <div className="border border-stone-200 rounded-4xl overflow-hidden grid grid-cols-1 md:grid-cols-5 grid-rows-4 md:grid-rows-1 shadow-xl w-full max-w-4xl">
-        <div className="relative row-span-1 md:row-span-1 col-span-1 md:col-span-2 bg-stone-50 border-r border-stone-200 py-14 px-6 items-end flex flex-col gap-4 overflow-hidden">
+    // On phones the card fills the whole screen: no outer padding, border, radius or shadow.
+    <main className="flex flex-col items-center justify-center min-h-screen max-md:min-h-dvh gap-6 max-md:gap-0 bg-stone-100 max-md:bg-white p-2 max-md:p-0">
+      <div className="overflow-hidden grid grid-cols-1 md:grid-cols-5 grid-rows-[auto_1fr] md:grid-rows-1 w-full max-w-4xl max-md:min-h-dvh md:border md:border-stone-200 md:rounded-4xl md:shadow-xl">
+        <div className="relative row-span-1 col-span-1 md:col-span-2 bg-stone-50 md:border-r md:border-stone-200 py-14 px-6 items-end flex flex-col gap-4 overflow-hidden">
           <img src="/logo.svg" className="w-1/2" />
           <h4 className="">Book<span className="font-bold">mark <span className="text-teal-600">it</span></span> wherever, whenever.</h4>
           <img src={form == "login" ? "/float.svg" : "/clumsy.svg"} className="welcome-character " />
         </div>
-        <div className="flex flex-col row-span-3 md:row-span-1 col-span-1 md:col-span-3 px-8 md:px-14 py-10 md:py-16 bg-white">
+        <div className="flex flex-col row-span-1 col-span-1 md:col-span-3 px-8 md:px-14 py-10 md:py-16 bg-white">
           <div className="flex flex-col gap-2  mb-8">
             <h2 className="font-bold text-3xl font-brand">
               {form == "login" ? "Welcome back!" : "Create an account"}

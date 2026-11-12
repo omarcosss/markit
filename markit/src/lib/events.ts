@@ -57,6 +57,16 @@ export function getCurrentView(): SidebarView {
   return _currentView;
 }
 
+/** Asks an already-mounted dashboard to open its mobile search field. */
+export function emitOpenSearch() {
+  window.dispatchEvent(new CustomEvent("search:open"));
+}
+
+export function onOpenSearch(handler: () => void) {
+  window.addEventListener("search:open", handler);
+  return () => window.removeEventListener("search:open", handler);
+}
+
 export function emitNavigate(view: SidebarView) {
   _currentView = view;
   window.dispatchEvent(new CustomEvent("sidebar:navigate", { detail: view }));

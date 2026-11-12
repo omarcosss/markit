@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Search, Xmark } from "iconoir-react";
 import Button from "../components/Button";
 import { ApiError } from "../lib/api";
 import { bookmarksService } from "../services/bookmarks";
 import { collectionsService } from "../services/collections";
-import { onBookmarkAdded, onBookmarkUpdated, onCollectionAdded, onCollectionRemoved, onCollectionUpdated, onNavigate, onSearch, type SidebarView } from "../lib/events";
+import { emitSearch, getCurrentView, onOpenSearch, onBookmarkAdded, onBookmarkUpdated, onCollectionAdded, onCollectionRemoved, onCollectionUpdated, onNavigate, onSearch, type SidebarView } from "../lib/events";
 import type { Bookmark, Collection } from "../types";
 import Layout from "./Layout";
 import BookmarkCard from "../components/BookmarkCard";
@@ -40,13 +41,20 @@ export default function DashboardPage() {
 
   const [collections, setCollections] = useState<Collection[]>([]);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [view, setView] = useState<SidebarView>({ type: "all" });
+  // Starts on whatever view the nav chose before this page mounted (e.g. a collection opened from the Collections page).
+  const [view, setView] = useState<SidebarView>(getCurrentView);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<BookmarkFilterState>(DEFAULT_FILTERS);
   const [now] = useState(() => Date.now());
   const [loadError, setLoadError] = useState("");
   const [renaming, setRenaming] = useState<Collection | null>(null);
   const [addingBookmark, setAddingBookmark] = useState(false);
+  const location = useLocation();
+  // Opens on mount when the bottom nav's Search button navigated here.
+  const [mobileSearchOpen, setMobileSearchOpen] = useState<boolean>(
+    () => location.state?.openSearch === true
+  );
+  const mobileSearchRef = useRef<HTMLInputElement>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(readPageSize);
@@ -58,6 +66,26 @@ export default function DashboardPage() {
       return false;
     }
   });
+
+  // Search from the bottom nav while this page is already mounted.
+  useEffect(
+    () =>
+      onOpenSearch(() => {
+        setMobileSearchOpen(true);
+        mobileSearchRef.current?.focus();
+      }),
+    []
+  );
+
+  // Focus the field whenever it appears.
+  useEffect(() => {
+    if (mobileSearchOpen) mobileSearchRef.current?.focus();
+  }, [mobileSearchOpen]);
+
+  function closeMobileSearch() {
+    setMobileSearchOpen(false);
+    emitSearch("");
+  }
 
   useEffect(() => {
     try {
@@ -217,15 +245,19 @@ export default function DashboardPage() {
 
   return (
     <Layout>
-      <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6 md:px-10 md:py-10 flex flex-col overflow-y-auto overflow-x-visible">
+      {/* pb-28 on mobile keeps the last row clear of the bottom nav */}
+      <main className="flex-1 px-4 pt-5 pb-28 sm:px-6 sm:pt-6 md:px-10 md:pt-10 md:pb-10 flex flex-col overflow-y-auto overflow-x-visible">
         <div className="flex items-center justify-between gap-4 mb-4 p-2">
           <div className="flex items-center gap-2 min-w-0">
-            <h2 className="text-2xl flex flex-wrap text-wrap gap-3 items-center font-brand font-bold align-middle text-stone-900 truncate">
-              {heading}
-              <span className=" text-stone-600 font-normal text-xs px-4 py-2 bg-stone-100 rounded-full">
-                {filtered.length} bookmarks
-              </span>
-            </h2>
+            <div className="min-w-0">
+              <h2 className="text-2xl flex flex-wrap text-wrap gap-3 items-center font-brand font-bold align-middle text-stone-900 truncate">
+                {heading}
+                <span className="hidden md:inline text-stone-600 font-normal text-xs px-4 py-2 bg-stone-100 rounded-full">
+                  {filtered.length} bookmarks
+                </span>
+              </h2>
+              <p className="md:hidden text-sm text-stone-500">{filtered.length} bookmarks</p>
+            </div>
             {activeCollection && (
               <CollectionOptionsMenu collection={activeCollection} onRename={() => setRenaming(activeCollection)} />
             )}
@@ -238,6 +270,25 @@ export default function DashboardPage() {
             controls="bookmark-filters"
           />
         </div>
+
+        {mobileSearchOpen && (
+          <div className="md:hidden flex items-center gap-2 h-12 mb-4 pl-4 pr-2 rounded-2xl border border-stone-200 bg-white focus-within:ring-2 focus-within:ring-teal-500">
+            <Search width={18} height={18} className="shrink-0 text-stone-600" aria-hidden="true" />
+            <input
+              ref={mobileSearchRef}
+              type="search"
+              aria-label="Search bookmarks"
+              placeholder="Search bookmarks…"
+              value={searchQuery}
+              onChange={(e) => emitSearch(e.target.value)}
+              onKeyDown={(e) => e.key === "Escape" && closeMobileSearch()}
+              className="flex-1 min-w-0 bg-transparent text-[16px] text-stone-900 outline-none"
+            />
+            <Button variant="ghost" size="sm" aria-label="Close search" onClick={closeMobileSearch}>
+              <Xmark width={16} height={16} strokeWidth={2} />
+            </Button>
+          </div>
+        )}
 
         <BookmarkFilters
           open={filtersOpen}
@@ -273,7 +324,7 @@ export default function DashboardPage() {
           </div>
         ) : (
           <>
-            <div ref={listRef} className="overflow-visible p-2 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div ref={listRef} className="overflow-visible p-2 grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {visible.map((b) => (
                 <BookmarkCard
                   key={b.id}
