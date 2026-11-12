@@ -1,4 +1,4 @@
-import { Menu, Plus, Search, Xmark } from "iconoir-react";
+import { Plus, Search, Xmark } from "iconoir-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User } from "../types";
@@ -11,7 +11,8 @@ import { getAvatarUrl } from "../lib/avatar";
 
 type ModalView = "newBookmark" | "userInfo" | null;
 
-export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
+/** Desktop only. On mobile the bottom nav (MobileNav) replaces it. */
+export default function Header() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [modal, setModal] = useState<ModalView>(null);
@@ -67,9 +68,8 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   );
 
   return (
-    <header className="w-full shrink-0">
-      {/* Desktop: single-row layout */}
-      <div className="hidden md:flex w-full h-20">
+    <header className="hidden md:block w-full shrink-0">
+      <div className="flex w-full h-20">
         <div className="flex w-full h-full items-center px-6 gap-3">
           <img src="/logo.svg" className="h-8" alt="Markit" />
         </div>
@@ -96,43 +96,6 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
             </button>
           )}
         </div>
-      </div>
-
-      {/* Mobile: two rows */}
-      <div className="md:hidden flex flex-col gap-3 px-4 pt-3 pb-2">
-        <div className="flex items-center justify-between gap-3 h-12">
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={onMenuClick}
-              aria-label="Open menu"
-            >
-              <Menu width={18} height={18} />
-            </Button>
-            <img src="/logo.svg" className="h-7" alt="Markit" />
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              onClick={() => setModal("newBookmark")}
-              aria-label="New bookmark"
-            >
-              <Plus width={18} height={18} />
-            </Button>
-            {user && (
-              <button
-                type="button"
-                onClick={() => setModal("userInfo")}
-                aria-label="Account"
-                className="w-10 h-10 shrink-0 rounded-full overflow-hidden bg-teal-100 cursor-pointer hover:ring-2 hover:ring-teal-300 transition"
-              >
-                <img src={avatarUrl} alt="" className="w-full h-full" />
-              </button>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-2">{searchInput}</div>
       </div>
 
       {modal === "newBookmark" && (

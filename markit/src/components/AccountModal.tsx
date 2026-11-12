@@ -37,6 +37,32 @@ export default function AccountModal({
   onUserUpdated,
   onDeleted,
 }: AccountModalProps) {
+  return (
+    <Modal onClose={onClose} size="md" flush title="Account">
+      <AccountPanel
+        user={user}
+        onLogout={onLogout}
+        onUserUpdated={onUserUpdated}
+        onDeleted={onDeleted}
+        variant="modal"
+      />
+    </Modal>
+  );
+}
+
+type AccountPanelProps = Omit<AccountModalProps, "onClose"> & {
+  /** "modal" leaves room for the modal's floating close button; "page" is the mobile profile page. */
+  variant?: "modal" | "page";
+};
+
+/** The account tabs and forms, shared by the desktop modal and the mobile profile page. */
+export function AccountPanel({
+  user,
+  onLogout,
+  onUserUpdated,
+  onDeleted,
+  variant = "modal",
+}: AccountPanelProps) {
   const [tab, setTab] = useState<Tab>("account");
   const [view, setView] = useState<AccountView>("overview");
 
@@ -46,8 +72,7 @@ export default function AccountModal({
   }
 
   return (
-    <Modal onClose={onClose} size="md" flush title="Account">
-      <div className="flex flex-col sm:flex-row min-h-[420px]">
+      <div className={`flex flex-col sm:flex-row ${variant === "modal" ? "min-h-[420px]" : ""}`}>
         <div
           role="tablist"
           aria-label="Account sections"
@@ -69,7 +94,7 @@ export default function AccountModal({
           </TabButton>
         </div>
 
-        <div className="flex-1 min-w-0 bg-white p-6 sm:p-8 pt-14 sm:pt-16">
+        <div className={`flex-1 min-w-0 bg-white ${variant === "modal" ? "p-6 sm:p-8 pt-14 sm:pt-16" : "p-4 sm:p-8"}`}>
           {tab === "account" ? (
             <div role="tabpanel" id="account-panel" aria-labelledby="account-tab">
               {view === "overview" && (
@@ -111,7 +136,6 @@ export default function AccountModal({
           )}
         </div>
       </div>
-    </Modal>
   );
 }
 
