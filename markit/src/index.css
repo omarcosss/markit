@@ -4,8 +4,6 @@
 :root {
   /* Accent — Tailwind teal */
   --color-accent:            #14b8a6; /* teal-500 */
-  --color-accent-hover:      #0d9488; /* teal-600 */
-  --color-accent-foreground: #ffffff;
 
   /* Danger — Tailwind red */
   --color-danger:            #ef4444; /* red-500 */
@@ -19,12 +17,11 @@
 
   /* Surface */
   --color-background:        #ffffff;
-  --font-brand: "Bricolage Grotesque", sans-serif;
 }
 
 @theme {
-  --font-brand: var(--font-brand);
-} 
+  --font-brand: "Bricolage Grotesque", sans-serif;
+}
 
 /* ── Base reset ─────────────────────────────────────────────────────────── */
 html {

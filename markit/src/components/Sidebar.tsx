@@ -38,7 +38,7 @@ function SidebarItem({
 
 type ModalView = "newBookmark" | "editBookmark" | "newCollection" | null;
 
-export default function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
+export default function Sidebar() {
   const navigate = useNavigate();
 
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -48,7 +48,6 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}
   function navigate_to(v: SidebarView) {
     setView(v);
     emitNavigate(v);
-    onNavigate?.();
   }
 
   useEffect(() => {

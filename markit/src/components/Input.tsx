@@ -1,14 +1,11 @@
 import { useId, useState, type ChangeEvent, type FocusEvent, type InputHTMLAttributes } from 'react';
 import './Input.css';
 
+// Used by the login and signup forms only. Everything else uses TextField.
 type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> & {
   label?: string;
   error?: string;
   helperText?: string;
-  containerClassName?: string;
-  inputClassName?: string;
-  mask?: (value: string) => string;
-  showRequired?: boolean;
 };
 
 export default function Input({
@@ -21,10 +18,6 @@ export default function Input({
   required,
   disabled,
   className = '',
-  containerClassName = '',
-  inputClassName = '',
-  showRequired = false,
-  mask,
   onBlur,
   onChange,
   ...rest
@@ -45,10 +38,6 @@ export default function Input({
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (mask) {
-      event.currentTarget.value = mask(event.currentTarget.value);
-    }
-
     if (isTouched) {
       setHasNativeInvalid(!event.currentTarget.validity.valid);
     }
@@ -65,12 +54,11 @@ export default function Input({
     required ? 'input--required' : '',
     label ? 'input--with-label' : '',
     helperText ? 'input--with-helper' : '',
-    containerClassName,
   ]
     .filter(Boolean)
     .join(' ');
 
-  const inputClasses = ['input__field', className, inputClassName].filter(Boolean).join(' ');
+  const inputClasses = ['input__field', className].filter(Boolean).join(' ');
 
   return (
     <div className={containerClasses}>
@@ -93,7 +81,6 @@ export default function Input({
         {label ? (
           <span className="input__label">
             <span className="input__label-text">{label}</span>
-            {showRequired ? <span className="input__required-mark">*</span> : null}
           </span>
         ) : null}
       </label>

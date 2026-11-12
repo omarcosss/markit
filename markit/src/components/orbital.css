@@ -59,38 +59,6 @@
   animation: status-blink 2s steps(4) infinite;
 }
 
-/* ── mini variant ── */
-.orbital--mini {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-}
-
-.orbital--mini .orbital-ring {
-  border-width: 1px;
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-.orbital--mini .orbital-ring::before {
-  inset: -1px;
-  border-width: 1px;
-  border-top-color: #ffffff;
-  border-right-color: #ffffff;
-  animation-duration: 1s;
-}
-
-.orbital--mini .orbital-ring::after {
-  inset: 3px;
-  border-width: 1px;
-  border-bottom-color: rgba(255, 255, 255, 0.5);
-  animation-duration: 1.6s;
-}
-
-/* dot hidden on mini — too small to render well */
-.orbital--mini .orbital-dot {
-  display: none;
-}
-
 @keyframes orbit {
   to { transform: rotate(360deg); }
 }

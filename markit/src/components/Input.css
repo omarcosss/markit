@@ -70,9 +70,6 @@
     min-height: 1em;
 }
 
-.input__message--helper {
-}
-
 .input__message--error {
     color: var(--color-danger);
 }
