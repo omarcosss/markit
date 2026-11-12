@@ -24,7 +24,7 @@ function SidebarItem({
   return (
     <button
       onClick={onClick}
-      className={`flex w-full items-center gap-3 px-4 py-3 rounded-2xl border transition-colors ${
+      className={`flex w-full outline-teal-500 items-center gap-3 px-4 py-3 rounded-2xl border transition-colors ${
         active
           ? "text-stone-900 font-semibold bg-stone-200 border-stone-100  "
           : "text-stone-700 hover:bg-stone-100 hover:text-stone-900 border-transparent"

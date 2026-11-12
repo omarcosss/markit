@@ -6,7 +6,7 @@ import { usersService } from "../services/users";
 import { ApiError } from "../lib/api";
 import { getAvatarUrl } from "../lib/avatar";
 import Button from "./Button";
-import Input from "./Input";
+import { TextField } from "./TextField";
 import Modal from "./Modal";
 
 type Tab = "account" | "about";
@@ -283,39 +283,39 @@ function EditForm({
       <SectionHeader title="Edit account information" onBack={onCancel} />
 
       <div className="flex flex-col gap-4">
-        <Input
+        <TextField
           label="Name"
           value={name}
           maxLength={100}
           autoComplete="name"
-          onChange={(e) => {
-            setName(e.target.value);
+          onChange={(v) => {
+            setName(v);
             setErrors((prev) => ({ ...prev, name: undefined, form: undefined }));
           }}
-          error={errors.name}
+          errorMessage={errors.name}
         />
-        <Input
+        <TextField
           label="Email"
           type="email"
           value={email}
           autoComplete="email"
-          onChange={(e) => {
-            setEmail(e.target.value);
+          onChange={(v) => {
+            setEmail(v);
             setErrors((prev) => ({ ...prev, email: undefined, form: undefined }));
           }}
-          error={errors.email}
+          errorMessage={errors.email}
         />
-        <Input
+        <TextField
           label="Current password"
           type="password"
           value={password}
           autoComplete="current-password"
-          helperText="Required to save changes"
-          onChange={(e) => {
-            setPassword(e.target.value);
+          description="Required to save changes"
+          onChange={(v) => {
+            setPassword(v);
             setErrors((prev) => ({ ...prev, password: undefined, form: undefined }));
           }}
-          error={errors.password}
+          errorMessage={errors.password}
         />
         {errors.form && (
           <p role="alert" className="text-sm text-red-600">
@@ -381,39 +381,39 @@ function PasswordForm({ onCancel, onSaved }: { onCancel: () => void; onSaved: ()
       <SectionHeader title="Change password" onBack={onCancel} />
 
       <div className="flex flex-col gap-4">
-        <Input
+        <TextField
           label="Current password"
           type="password"
           value={current}
           autoComplete="current-password"
-          onChange={(e) => {
-            setCurrent(e.target.value);
+          onChange={(v) => {
+            setCurrent(v);
             setErrors((prev) => ({ ...prev, current: undefined, form: undefined }));
           }}
-          error={errors.current}
+          errorMessage={errors.current}
         />
-        <Input
+        <TextField
           label="New password"
           type="password"
           value={next}
           autoComplete="new-password"
-          helperText={`At least ${PASSWORD_MIN} characters`}
-          onChange={(e) => {
-            setNext(e.target.value);
+          description={`At least ${PASSWORD_MIN} characters`}
+          onChange={(v) => {
+            setNext(v);
             setErrors((prev) => ({ ...prev, next: undefined, form: undefined }));
           }}
-          error={errors.next}
+          errorMessage={errors.next}
         />
-        <Input
+        <TextField
           label="Confirm new password"
           type="password"
           value={confirm}
           autoComplete="new-password"
-          onChange={(e) => {
-            setConfirm(e.target.value);
+          onChange={(v) => {
+            setConfirm(v);
             setErrors((prev) => ({ ...prev, confirm: undefined, form: undefined }));
           }}
-          error={errors.confirm}
+          errorMessage={errors.confirm}
         />
         {errors.form && (
           <p role="alert" className="text-sm text-red-600">
@@ -472,16 +472,16 @@ function DeleteForm({
         collections. This can't be undone.
       </p>
 
-      <Input
+      <TextField
         label="Current password"
         type="password"
         value={password}
         autoComplete="current-password"
-        onChange={(e) => {
-          setPassword(e.target.value);
+        onChange={(v) => {
+          setPassword(v);
           setError("");
         }}
-        error={error}
+        errorMessage={error}
       />
 
       <div className="flex gap-3">
