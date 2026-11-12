@@ -12,6 +12,7 @@ import BookmarkFilters from "../components/BookmarkFilters";
 import FilterToggle from "../components/FilterToggle";
 import CollectionOptionsMenu from "../components/CollectionOptionsMenu";
 import EditCollectionModal from "../components/EditCollectionModal";
+import NewBookmarkModal from "../components/NewBookmarkModal";
 import Pagination from "../components/Pagination";
 import {
   DEFAULT_FILTERS,
@@ -45,6 +46,7 @@ export default function DashboardPage() {
   const [now] = useState(() => Date.now());
   const [loadError, setLoadError] = useState("");
   const [renaming, setRenaming] = useState<Collection | null>(null);
+  const [addingBookmark, setAddingBookmark] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(readPageSize);
@@ -218,7 +220,7 @@ export default function DashboardPage() {
       <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6 md:px-10 md:py-10 flex flex-col overflow-y-auto overflow-x-visible">
         <div className="flex items-center justify-between gap-4 mb-4 p-2">
           <div className="flex items-center gap-2 min-w-0">
-            <h2 className="text-2xl flex flex-wrap gap-3 items-center font-brand font-bold align-middle text-stone-900 truncate">
+            <h2 className="text-2xl flex flex-wrap text-wrap gap-3 items-center font-brand font-bold align-middle text-stone-900 truncate">
               {heading}
               <span className=" text-stone-600 font-normal text-xs px-4 py-2 bg-stone-100 rounded-full">
                 {filtered.length} bookmarks
@@ -249,6 +251,10 @@ export default function DashboardPage() {
           <EditCollectionModal collection={renaming} onClose={() => setRenaming(null)} />
         )}
 
+        {addingBookmark && (
+          <NewBookmarkModal onClose={() => setAddingBookmark(false)} />
+        )}
+
         {loadError ? (
           <div className="flex flex-col items-center justify-center h-64 gap-4 text-stone-500">
             <p className="text-sm text-center px-4">{loadError}</p>
@@ -260,10 +266,9 @@ export default function DashboardPage() {
           <div className="flex flex-col items-center justify-center  gap-8 py-12 ">
             <img src="/empty-state-doodle.svg" />
             <p className="text-lg font-semibold text-center px-4">
-              {/* todo: this should show the button bellow should show the new bookmark modal */}
               {narrowed
                 ? <span>No bookmarks match your search or filters...</span>
-                : <span>No bookmarks yet. <button className="text-teal-500 cursor-pointer underline ">Try pasting a link to start.</button></span>}
+                : <span>No bookmarks yet. <button type="button" onClick={() => setAddingBookmark(true)} className="text-teal-500 cursor-pointer underline ">Try pasting a link to start.</button></span>}
             </p>
           </div>
         ) : (

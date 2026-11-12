@@ -12,6 +12,7 @@
     -moz-transition: background 200ms ease, transform 50ms ease-in-out;
     -o-transition: background 200ms ease, transform 50ms ease-in-out;
     transition: background 200ms ease, transform 50ms ease-in-out;
+    outline-color: var(--color-teal-500);
 }
 
 
@@ -49,6 +50,7 @@ a {
     background-color: var(--color-accent);
     background: var(--color-teal-500);
     color: var(--color-white);
+    outline-color: var(--color-teal-300);
     /* text-shadow: 0px 1px 1px rgb(0 0 0 / 0.2); */
 }
 .button--primary svg {

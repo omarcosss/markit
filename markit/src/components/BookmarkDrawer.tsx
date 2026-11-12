@@ -3,14 +3,16 @@ import { ArrowUpRight, Check, Copy, EditPencil, Globe, Trash, Xmark } from "icon
 import { toast } from "sonner";
 import type { Bookmark, Collection } from "../types";
 import Button from "./Button";
-import Input from "./Input";
-import TextArea from "./TextArea";
+import { TextField } from "./TextField";
+import { Select, SelectItem } from "./Select";
 import { bookmarksService } from "../services/bookmarks";
 import { collectionsService } from "../services/collections";
 import { emitBookmarkUpdated } from "../lib/events";
 import { normalizeUrl, safeHref } from "../lib/url";
 
 const CLOSE_DURATION_MS = 180;
+// Key for "no collection" in the picker; collection ids are numeric, so it can't collide.
+const NO_COLLECTION = "none";
 
 type BookmarkDrawerProps = {
   bookmark: Bookmark;
@@ -206,35 +208,37 @@ export default function BookmarkDrawer({ bookmark, onClose }: BookmarkDrawerProp
           )}
 
           <div className="flex flex-col gap-4">
-            <label htmlFor={collectionFieldId} className="text-stone-600 text-sm">
-              Collection
-            </label>
             {isEditing ? (
-              <select
-                id={collectionFieldId}
-                value={fields.collectionId ?? ""}
-                onChange={(e) =>
+              <Select
+                label="Collection"
+                size="lg"
+                value={fields.collectionId === null ? NO_COLLECTION : String(fields.collectionId)}
+                onChange={(key) =>
                   setFields((f) => ({
                     ...f,
-                    collectionId: e.target.value ? Number(e.target.value) : null,
+                    collectionId: String(key) === NO_COLLECTION ? null : Number(key),
                   }))
                 }
-                className="text-lg border border-stone-200 rounded-2xl px-4 py-3 bg-white"
               >
-                <option value="">None</option>
+                <SelectItem id={NO_COLLECTION}>None</SelectItem>
                 {collections.map((c) => (
-                  <option key={c.id} value={c.id}>
+                  <SelectItem key={c.id} id={String(c.id)}>
                     {c.name}
-                  </option>
+                  </SelectItem>
                 ))}
-              </select>
+              </Select>
             ) : (
-              <span
-                id={collectionFieldId}
-                className="text rounded-2xl px-4 py-3 bg-stone-100 -mx-3"
-              >
-                {currentCollectionName}
-              </span>
+              <>
+                <label htmlFor={collectionFieldId} className="text-stone-600 text-sm">
+                  Collection
+                </label>
+                <span
+                  id={collectionFieldId}
+                  className="text rounded-2xl px-4 py-3 bg-stone-100 -mx-3"
+                >
+                  {currentCollectionName}
+                </span>
+              </>
             )}
           </div>
 
@@ -417,25 +421,24 @@ function EditFields({
         onSubmit();
       }}
     >
-      <Input
+      <TextField
         label="Title"
         value={fields.title}
-        onChange={(e) => onChange((f) => ({ ...f, title: e.target.value }))}
+        onChange={(v) => onChange((f) => ({ ...f, title: v }))}
         autoFocus
       />
-      <Input
+      <TextField
         label="URL"
         type="text"
         inputMode="url"
         value={fields.url}
-        onChange={(e) => onChange((f) => ({ ...f, url: e.target.value }))}
+        onChange={(v) => onChange((f) => ({ ...f, url: v }))}
       />
-      <TextArea
+      <TextField
         label="Description"
+        multiline
         value={fields.description}
-        onChange={(e) =>
-          onChange((f) => ({ ...f, description: e.target.value }))
-        }
+        onChange={(v) => onChange((f) => ({ ...f, description: v }))}
         rows={4}
       />
       <button type="submit" hidden aria-hidden="true" tabIndex={-1} />

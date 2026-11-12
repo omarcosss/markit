@@ -5,12 +5,14 @@ import { bookmarksService } from "../services/bookmarks";
 import { collectionsService } from "../services/collections";
 import { emitBookmarkAdded } from "../lib/events";
 import { toast } from "sonner";
-import Input from "./Input";
-import TextArea from "./TextArea";
+import { TextField } from "./TextField";
 import { OrbitalLoader } from "./OrbitalLoader";
+import { Select, SelectItem } from "./Select";
 // import Divisor from "./Divisor";
 import type { Collection, ScrapeResult } from "../types";
 import { normalizeUrl } from "../lib/url";
+
+const NO_COLLECTION = "none";
 
 export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState<"url" | "details">("url");
@@ -79,13 +81,13 @@ export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
         ) : (
           <form onSubmit={handleScrape} noValidate className="flex flex-col gap-6 px-2 pb-2" id="addBookmarkForm">
             {/* <Divisor /> */}
-            <Input
+            <TextField
               type="url"
               value={url}
-              onChange={(e) => { setUrl(e.target.value); setError(""); }}
+              onChange={(v) => { setUrl(v); setError(""); }}
               autoFocus
               label="Paste or type the link you want to bookmark"
-              error={error}
+              errorMessage={error}
             />
             {/* <Divisor /> */}
             <div className="flex justify-end gap-3">
@@ -104,33 +106,30 @@ export default function NewBookmarkModal({ onClose }: { onClose: () => void }) {
           <div className="flex flex-col gap-6 px-2 pb-2">
             {/* <Divisor /> */}
             {scrapeResult?.title && (
-              <Input
+              <TextField
                 label="Title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={setTitle}
               />
             )}
-            <TextArea
+            <TextField
               label="Description"
+              multiline
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={setDescription}
               rows={3}
-              helperText="Optional"
+              description="Optional"
             />
-            <div className="flex flex-col gap-1">
-              <label className="text-sm text-stone-600" htmlFor="collection-select">Collection</label>
-              <select
-                id="collection-select"
-                value={collectionId}
-                onChange={(e) => setCollectionId(e.target.value === "" ? "" : Number(e.target.value))}
-                className="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-300"
-              >
-                <option value="">None</option>
-                {collections.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label="Collection"
+              value={collectionId === "" ? NO_COLLECTION : String(collectionId)}
+              onChange={(key) => setCollectionId(String(key) === NO_COLLECTION ? "" : Number(key))}
+            >
+              <SelectItem id={NO_COLLECTION}>None</SelectItem>
+              {collections.map((c) => (
+                <SelectItem key={c.id} id={String(c.id)}>{c.name}</SelectItem>
+              ))}
+            </Select>
             {/* <Divisor /> */}
             <div className="flex gap-3">
               <Button

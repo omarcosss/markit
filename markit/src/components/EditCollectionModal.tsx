@@ -3,7 +3,7 @@ import { collectionsService } from "../services/collections";
 import { emitCollectionUpdated } from "../lib/events";
 import { toast } from "sonner";
 import Button from "./Button";
-import Input from "./Input";
+import { TextField } from "./TextField";
 import Modal from "./Modal";
 import Divisor from "./Divisor";
 import type { Collection } from "../types";
@@ -53,13 +53,13 @@ export default function EditCollectionModal({
       ) : (
         <form onSubmit={handleSave} id="editCollectionForm" className="flex flex-col gap-6">
           <Divisor />
-          <Input
+          <TextField
             value={name}
-            onChange={(e) => { setName(e.target.value); setError(""); }}
+            onChange={(v) => { setName(v); setError(""); }}
             label="Collection name"
             maxLength={100}
             autoFocus
-            error={error}
+            errorMessage={error}
           />
           <Divisor />
           <Button className="self-end" type="submit" form="editCollectionForm" loading={saving}>

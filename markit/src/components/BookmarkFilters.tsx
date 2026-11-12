@@ -1,4 +1,5 @@
 import Button from "./Button";
+import { Select, SelectItem } from "./Select";
 import "./BookmarkFilters.css";
 import {
   DEFAULT_FILTERS,
@@ -8,8 +9,8 @@ import {
   type SortOption,
 } from "../lib/bookmarkFilters";
 
-const selectClass =
-  "rounded-2xl bg-white px-4 py-3 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-teal-500 border border-stone-200";
+// "All domains" is a real option in the list, so it needs a non-empty key.
+const ALL_DOMAINS = "__all__";
 
 export default function BookmarkFilters({
   filters,
@@ -35,75 +36,56 @@ export default function BookmarkFilters({
           role="group"
           aria-label="Filter bookmarks"
         >
-          <div className="flex flex-col gap-2 flex-1">
-            <label
-              htmlFor="filter-sort"
-              className="text-sm px-1 text-stone-500"
-            >
-              Sort by
-            </label>
-            <select
-              id="filter-sort"
-              value={filters.sort}
-              onChange={(e) =>
-                onChange({ ...filters, sort: e.target.value as SortOption })
-              }
-              className={selectClass}
-            >
-              <option value="default">Default</option>
-              <option value="newest">Newest saved</option>
-              <option value="oldest">Oldest saved</option>
-              <option value="title">Title (A–Z)</option>
-              <option value="domain">Domain (A–Z)</option>
-            </select>
-          </div>
+          <Select
+            label="Sort by"
+            className="flex-1"
+            value={filters.sort}
+            onChange={(key) =>
+              onChange({ ...filters, sort: String(key) as SortOption })
+            }
+          >
+            <SelectItem id="default">Default</SelectItem>
+            <SelectItem id="newest">Newest saved</SelectItem>
+            <SelectItem id="oldest">Oldest saved</SelectItem>
+            <SelectItem id="title">Title (A–Z)</SelectItem>
+            <SelectItem id="domain">Domain (A–Z)</SelectItem>
+          </Select>
 
-          <div className="flex flex-col gap-2 flex-1">
-            <label
-              htmlFor="filter-domain"
-              className="text-sm px-1 text-stone-500"
-            >
-              Domain
-            </label>
-            <select
-              id="filter-domain"
-              value={filters.domain}
-              onChange={(e) => onChange({ ...filters, domain: e.target.value })}
-              className={selectClass}
-            >
-              <option value="">All domains</option>
-              {domains.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Select
+            label="Domain"
+            className="flex-1"
+            value={filters.domain || ALL_DOMAINS}
+            onChange={(key) =>
+              onChange({
+                ...filters,
+                domain: String(key) === ALL_DOMAINS ? "" : String(key),
+              })
+            }
+          >
+            <SelectItem id={ALL_DOMAINS}>All domains</SelectItem>
+            {domains.map((d) => (
+              <SelectItem key={d} id={d}>
+                {d}
+              </SelectItem>
+            ))}
+          </Select>
 
-          <div className="flex flex-col gap-2 flex-1">
-            <label
-              htmlFor="filter-saved"
-              className="text-sm px-1 text-stone-500"
-            >
-              Saved
-            </label>
-            <select
-              id="filter-saved"
-              value={filters.savedWithin}
-              onChange={(e) =>
-                onChange({
-                  ...filters,
-                  savedWithin: e.target.value as SavedWithin,
-                })
-              }
-              className={selectClass}
-            >
-              <option value="any">Any time</option>
-              <option value="7">Last 7 days</option>
-              <option value="30">Last 30 days</option>
-              <option value="365">Last year</option>
-            </select>
-          </div>
+          <Select
+            label="Saved"
+            className="flex-1"
+            value={filters.savedWithin}
+            onChange={(key) =>
+              onChange({
+                ...filters,
+                savedWithin: String(key) as SavedWithin,
+              })
+            }
+          >
+            <SelectItem id="any">Any time</SelectItem>
+            <SelectItem id="7">Last 7 days</SelectItem>
+            <SelectItem id="30">Last 30 days</SelectItem>
+            <SelectItem id="365">Last year</SelectItem>
+          </Select>
 
           {active && (
             <span className="text-sm text-stone-400  py-3" aria-live="polite">

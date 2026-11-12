@@ -1,6 +1,7 @@
 import { useEffect, useState, type KeyboardEvent } from "react";
 import { FastArrowLeft, FastArrowRight, NavArrowLeft, NavArrowRight } from "iconoir-react";
 import Button from "./Button";
+import { Select, SelectItem } from "./Select";
 
 interface PaginationProps {
   /** 1-based current page (already clamped by the caller). */
@@ -12,9 +13,6 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
 }
-
-const selectClass =
-  "rounded-xl bg-white pl-3 pr-8 py-1.5 text-sm text-stone-900 border border-stone-200 focus:outline-none focus:ring-2 focus:ring-teal-500 cursor-pointer";
 
 /** Two chevrons drawn close together, since the icon set has no double-arrow glyph. */
 function DoubleChevron({ direction }: { direction: "left" | "right" }) {
@@ -129,20 +127,22 @@ export default function Pagination({
         </Button>
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-stone-500 order-2 sm:order-3">
-        Rows per page:
-        <select
-          value={pageSize}
-          onChange={(e) => onPageSizeChange(Number(e.target.value))}
-          className={selectClass}
+      <div className="flex items-center gap-2 text-sm text-stone-500 order-2 sm:order-3">
+        <span id="rows-per-page-label">Rows per page:</span>
+        <Select
+          aria-labelledby="rows-per-page-label"
+          size="sm"
+          className="w-20"
+          value={String(pageSize)}
+          onChange={(key) => onPageSizeChange(Number(key))}
         >
           {pageSizeOptions.map((size) => (
-            <option key={size} value={size}>
-              {size}
-            </option>
+            <SelectItem key={size} id={String(size)}>
+              {String(size)}
+            </SelectItem>
           ))}
-        </select>
-      </label>
+        </Select>
+      </div>
     </nav>
   );
 }
